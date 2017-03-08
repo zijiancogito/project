@@ -1,0 +1,22 @@
+{
+  "pages":[
+    "pages/login/login",
+    "pages/chattingLogs/chattingLogs",
+    "pages/firstStart/firstStart",
+    "pages/friendInfo(simple)/friendInfo(simple)",
+    "pages/login/login",
+    "pages/protocol/protocol",
+    "pages/register/register",
+    "pages/searchFriend/searchFriend",
+    "pages/userInfo/userInfo",
+    "pages/dialog/dialog",
+    "pages/dialogList/dialogList",
+    "pages/findFriend/findFriend"
+  ],
+  "window":{
+    "backgroundTextStyle":"light",
+    "navigationBarBackgroundColor": "#fff",
+    "navigationBarTitleText": "WeChat",
+    "navigationBarTextStyle":"black"
+  }
+}
