@@ -1,0 +1,1 @@
+<button bindtap = "addFriend">添加该用户为好友</button>

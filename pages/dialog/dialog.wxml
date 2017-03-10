@@ -1,0 +1,1 @@
+<button bindtap = "friendInfo">好友详细信息</button>

@@ -1,5 +1,6 @@
 <!--register.wxml-->
 
 <view class="container">
-    
+    <button bindtap = "toProtocol">注册协议</button>
+    <button bindtap = "reg">确认注册</button>
 </view>

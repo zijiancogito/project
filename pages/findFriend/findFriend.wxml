@@ -1,0 +1,1 @@
+<button bindtap="searchFriend">搜索（跳转到好友信息（simple））</button>
