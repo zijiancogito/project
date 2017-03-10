@@ -1,10 +1,36 @@
 <!--index.wxml-->
 <view class="container">
   <view  bindtap="bindViewTap" class="userinfo">
+  
     <image class="userinfo-avatar" src="{{userInfo.avatarUrl}}" background-size="cover"></image>
     <text class="userinfo-nickname">{{userInfo.nickName}}</text>
+  
   </view>
-  <view class="usermotto">
-    <text class="user-motto">{{motto}}</text>
+  
+  <view class="weui-cell weui-cell_vcode">
+    <view class="weui-cell__hd">
+        <label class="weui-label"  >账号</label>
+    </view>
+    <view class="weui-cell__bd">
+        <input class="weui-input" type="tel" />
+    </view>
+  </view>
+  <view class="weui-cell weui-cell_vcode">
+    <view class="weui-cell__hd">
+        <label class="weui-label">密码</label>
+    </view>
+    <view class="weui-cell__bd">
+        <input class="weui-input" type="tel" />
+    </view>
+  </view>
+  <view class="page">
+    <view class="page__bd page__bd_spacing">
+      <view class="button-sp-area">
+        <button class="weui-btn mini-btn" type="primary" size="mini">登录</button>
+      </view>
+      <view class="button-sp-area">
+        <button class="weui-btn mini-btn" type="primary" size="mini">注册</button>
+      </view>
+    </view>
   </view>
 </view>
