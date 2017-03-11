@@ -1,6 +1,7 @@
 <!--register.wxml-->
 
 <view class="container">
+
     <view class="weui-cell weui-cell_vcode">
         <view class="weui-cell__hd">
             <label class="weui-label"  >昵称</label>
@@ -21,4 +22,8 @@
                 </view>
             </view>
         </view>
+
+    <button bindtap = "toProtocol">注册协议</button>
+    <button bindtap = "reg">确认注册</button>
+
 </view>

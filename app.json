@@ -1,9 +1,10 @@
 {
   "pages":[
+    "pages/index/index",
     "pages/login/login",
     "pages/chattingLogs/chattingLogs",
-    "pages/firstStart/firstStart",
     "pages/friendInfo(simple)/friendInfo(simple)",
+    "pages/friendInfo(detail)/friendInfo(detail)",
     "pages/login/login",
     "pages/protocol/protocol",
     "pages/register/register",
@@ -11,12 +12,37 @@
     "pages/userInfo/userInfo",
     "pages/dialog/dialog",
     "pages/dialogList/dialogList",
-    "pages/findFriend/findFriend"
+    "pages/findFriend/findFriend",
+    "pages/friendList/friendList"
   ],
   "window":{
     "backgroundTextStyle":"light",
     "navigationBarBackgroundColor": "#fff",
     "navigationBarTitleText": "WeChat",
     "navigationBarTextStyle":"black"
+  },
+  "tabBar": {
+    "color":"#a9b7b7",
+    "selectedColor":"#11cd6e",
+    "borderStyle":"white",
+    "list": [
+    {
+      "pagePath": "pages/index/index",
+      "text": "用户信息",
+      "iconPath": "image/user.png",
+      "selectedIconPath": "image/user.png"
+    },
+    {
+      "pagePath": "pages/dialogList/dialogList",
+      "text": "会话",
+      "iconPath": "image/friend.png",
+      "selectedIconPath": "image/friend.png"
+    },
+    {
+      "pagePath": "pages/findFriend/findFriend",
+      "text": "找基友",
+      "iconPath": "image/search.png",
+      "selectedIconPath": "image/search.png"
+    }]
   }
 }

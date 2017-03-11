@@ -1,0 +1,2 @@
+<!--pages/index/index.wxml-->
+<text>使用底部导航栏必须加index页面。。所以想想这个index放啥，建议放好友列表吧，,或者聊天记录？或者不用底部导航栏？</text>
