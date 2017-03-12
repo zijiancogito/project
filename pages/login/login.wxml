@@ -1,5 +1,6 @@
 <!--index.wxml-->
 <view class="container">
+<view class="page">
   <view  bindtap="bindViewTap" class="userinfo">
   
     <image class="userinfo-avatar" src="../../image/logo.png" background-size="cover"></image>
@@ -23,13 +24,13 @@
         <input class="weui-input" type="tel" />
     </view>
   </view>
-  <view class="page">
+  
     <view class="page__bd page__bd_spacing">
       <view class="button-sp-area">
-        <button class="weui-btn mini-btn" type="primary" size="mini" bindtap = "login">登录</button>
+        <button class="weui-btn mini-btn" type="primary" bindtap = "login">登录</button>
       </view>
       <view class="button-sp-area">
-        <button class="weui-btn mini-btn" type="primary" size="mini" bindtap = "register">注册</button>
+        <button class="weui-btn mini-btn" type="primary"  bindtap = "register">注册</button>
       </view>
     </view>
   </view>

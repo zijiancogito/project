@@ -1,1 +1,2 @@
+
 <button bindtap = "toFriend">跳转到会话窗口</button>
