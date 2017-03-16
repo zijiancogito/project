@@ -67,7 +67,18 @@ Page({
       icon:"success",
       duration:3000
     })
-    this.gopage("../dialogList/dialogList")
+    wx.navigateTo({
+      url: '../dialogList/dialogList',
+      success: function(res){
+        // success
+      },
+      fail: function() {
+        // fail
+      },
+      complete: function() {
+        // complete
+      }
+    })
   },
  
   register:function(){

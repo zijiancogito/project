@@ -1,7 +1,4 @@
 Page({
-    friendInfo:function(){
-        this.gopage("../friendInfo(detail)/friendInfo(detail)")
-    },
     gopage:function(url){
         wx.navigateTo({
           url: url,

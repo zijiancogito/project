@@ -14,7 +14,18 @@ Page({
         this.gopage("../protocol/protocol")
     },
     reg:function(){
-        this.gopage("../index/index")
+        wx.switchTab({
+          url: '../dialogList/dialogList',
+          success: function(res){
+            // success
+          },
+          fail: function() {
+            // fail
+          },
+          complete: function() {
+            // complete
+          }
+        })
     },
     bindAgreeChange: function (e) {
         this.setData({

@@ -1,2 +1,15 @@
 <!--pages/friendList/friendList.wxml-->
-<text>好友列表</text>
+<scroll-view scroll-y = "true" class="page">
+    <view class="page__bd">
+        <view class="weui-cells weui-cells_after-title">
+            <navigator url="../friendInfo(detail)/friendInfo(detail)" class="weui-cell weui-cell_access" hover-class="weui-cell_active"  style="height:100rpx">
+                <view class="weui-cell__hd">
+                    <image src="../../image/cao.png" style="margin-right: 5px;vertical-align: middle;width:80rpx; height: 80rpx;"></image>
+                </view>
+                <view class="weui-cell__bd">好友昵称</view>
+            </navigator>
+        </view>
+        <view class="line"></view>
+        <view class="space" style="height:1000rpx"></view>
+    </view>
+</scroll-view>
