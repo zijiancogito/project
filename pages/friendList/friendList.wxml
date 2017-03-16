@@ -1,5 +1,5 @@
 <!--pages/friendList/friendList.wxml-->
-<scroll-view scroll-y = "true" class="page">
+<scroll-view scroll-y = "true" class="page" style="height:100%">
     <view class="page__bd">
         <view class="weui-cells weui-cells_after-title">
             <navigator url="../friendInfo(detail)/friendInfo(detail)" class="weui-cell weui-cell_access" hover-class="weui-cell_active"  style="height:100rpx">
@@ -10,6 +10,5 @@
             </navigator>
         </view>
         <view class="line"></view>
-        <view class="space" style="height:1000rpx"></view>
     </view>
 </scroll-view>

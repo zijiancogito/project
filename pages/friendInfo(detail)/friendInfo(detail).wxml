@@ -1,5 +1,5 @@
 <!-- friendinfo detail wxml -->
-<view class="page">
+<view class="page" style="height:100%">
     <view class="page__bd">
         <view class="space" style="height:45rpx"></view>
         <view class="weui-panel weui-panel_access">
@@ -24,8 +24,10 @@
                 <view class="weui-cell__ft">说明文字</view>
             </view>
         </view>
-        
-        <view class="space" style="height:710rpx"></view>
+        <view class="space" style="height:45rpx"></view>
+        <view class="weui-btn-area">
+            <button class="weui-btn" type="primary" bindtap="chatlog">查看聊天记录</button>
+        </view>
     </view>
 </view>
 

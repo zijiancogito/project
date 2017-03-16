@@ -1,5 +1,5 @@
 
-<view class="page">
+<view class="page" style="height:100%">
 
     <view class="page__bd">
         <view class="weui-cells weui-cells_after-title">
@@ -20,6 +20,5 @@
                 <view class="weui-cell__ft weui-cell__ft_in-access"></view>
             </view>
         </view>
-        <view class="space" style="height:1000rpx;"></view>
     </view>
 </view>

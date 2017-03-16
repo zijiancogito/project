@@ -1,7 +1,7 @@
 <!-- userInfo.wxml-->
 
 
-<view class="page">
+<view class="page" style="height:100%">
     <view class="page__bd">
         <view class="space" style="height:45rpx"></view>
         <view class="weui-panel weui-panel_access">
@@ -27,21 +27,13 @@
             </view>
         </view>
         <view class="space" style="height:45rpx"></view>
-        <view class="weui-panel">
-            <view class="weui-panel__bd">
-                <view class="weui-media-box weui-media-box_small-appmsg">
-                    <view class="weui-cells weui-cells_in-small-appmsg">
-                        <navigator url="" class="weui-cell weui-cell_access" hover-class="weui-cell_active">
-                            <view class="weui-cell__bd weui-cell_primary">
-                                <view>设置</view>
-                            </view>
-                            <view class="weui-cell__ft weui-cell__ft_in-access"></view>
-                        </navigator>
-                    </view>
-                </view>
-            </view>
+        <view class="weui-btn-area">
+            <button class="weui-btn" type="warn" bindtap="confDel">删除所有聊天记录</button>
         </view>
-        <view class="space" style="height:510rpx"></view>
+        <view class="space" style="height:20rpx"></view>
+        <view class="weui-btn-area">
+            <button class="weui-btn" type="warn" bindtap="confExit">退出登陆</button>
+        </view>
     </view>
 </view>
 

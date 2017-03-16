@@ -62,18 +62,25 @@ Page({
   },
   isUser:function(){
     isReg = 1;//暂时没做登陆，认为已经注册
-    wx.showToast({
-      title:"登录成功",
-      icon:"success",
-      duration:3000
-    })
     wx.navigateTo({
       url: '../dialogList/dialogList',
       success: function(res){
         // success
+        wx.showToast({
+          title:"登录成功",
+          icon:"success",
+          duration:3000
+        }),
+        console.log("jump to" + url)
       },
       fail: function() {
         // fail
+        wx.showToast({
+          title:"登陆失败",
+          icon:"fail",
+          duration:3000
+        }),
+        console.log("jump to fail" )
       },
       complete: function() {
         // complete

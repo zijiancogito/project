@@ -7,11 +7,11 @@
     "pages/login/login",
     "pages/protocol/protocol",
     "pages/register/register",
-    "pages/searchFriend/searchFriend",
     "pages/userInfo/userInfo",
     "pages/dialog/dialog",
     "pages/dialogList/dialogList",
     "pages/findFriend/findFriend",
+    "pages/chatlog/chatlog",
     "pages/friendList/friendList"
   ],
   "window":{
