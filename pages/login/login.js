@@ -1,21 +1,22 @@
 //index.js
 //获取应用实例
+var connWebSocket = require("../../function/connect.js")
 var app = getApp()
 var isReg = 0;
 const self = this
 Page({
-  /*
   data: {
-    motto: 'Hello World',
-    userInfo: {}
+    loginInfo:{}
   },
-  */
   //事件处理函数
 
   bindViewTap: function() {
     wx.navigateTo({
       url: '../logs/logs'
     })
+  },
+  bindChange:function(e){
+    this.data.loginInfo[e.currentTarget.id] = e.detail.value
   },
   onLoad: function () {
     console.log('onLoad')
@@ -46,8 +47,35 @@ Page({
     },10001)//10s过后，登录失败
     this.isUser();
   },
-  register:function(){
 
+  isUser:function(){
+    var account = this.data.loginInfo.account
+    var password = this.data.loginInfo.password
+    var dataSent = {
+      acc :account,
+      psw:password
+    }
+    connWebSocket.setRecvCallback(this.msgHandle)
+    connWebSocket.sendMsg(dataSent,this.commonRes,this.commonRej);
+    wx.navigateTo({
+      url: '../dialogList/dialogList',
+      success: function(res){
+        wx.showToast({
+          title:"登录成功",
+          icon:"success",
+          duration:3000
+        }),
+        console.log("jump to" + url)
+      },
+      fail: function() {
+        wx.showToast({
+          title:"登陆失败",
+          icon:"success",
+          duration:3000
+        }),
+        console.log("jump to fail" )
+      },
+    })
   },
    gopage:function(url){
     wx.navigateTo({
@@ -60,36 +88,19 @@ Page({
       },
     })
   },
-  isUser:function(){
-    isReg = 1;//暂时没做登陆，认为已经注册
-    wx.navigateTo({
-      url: '../dialogList/dialogList',
-      success: function(res){
-        // success
-        wx.showToast({
-          title:"登录成功",
-          icon:"success",
-          duration:3000
-        }),
-        console.log("jump to" + url)
-      },
-      fail: function() {
-        // fail
-        wx.showToast({
-          title:"登陆失败",
-          icon:"fail",
-          duration:3000
-        }),
-        console.log("jump to fail" )
-      },
-      complete: function() {
-        // complete
-      }
-    })
-  },
- 
   register:function(){
     //点击“注册”按钮时调用的函数
     this.gopage("../register/register")
+  },
+
+  commonRes:function(result){
+      console.log(result)
+  },
+  commonRej:function(result){
+      console.log(result)
+  },
+  msgHandle:function(data){
+        var recv = JSON.parse(data)
+        var state = recv.res
   }
 })

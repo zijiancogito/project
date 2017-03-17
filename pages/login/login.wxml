@@ -13,7 +13,7 @@
         <label class="weui-label"  >账号</label>
     </view>
     <view class="weui-cell__bd">
-        <input class="weui-input" type="tel" />
+        <input class="weui-input" type="tel" id = "account" bindchange = "bindChange"/>
     </view>
   </view>
   <view class="weui-cell weui-cell_vcode">
@@ -21,17 +21,17 @@
         <label class="weui-label">密码</label>
     </view>
     <view class="weui-cell__bd">
-        <input class="weui-input" type="tel" />
+        <input class="weui-input" type="tel" id ="password" bindchange = "bindChange"/>
     </view>
   </view>
   
     <view class="page__bd page__bd_spacing">
       <view class="button-sp-area">
-        <button class="weui-btn mini-btn" type="primary" bindtap = "login">登录</button>
+        <button class="weui-btn mini-btn" type="primary" bindtap = "login" >登录</button>
       </view>
       <view class="space" style="height:20rpx;"></view>
       <view class="button-sp-area">
-        <button class="weui-btn mini-btn" type="primary"  bindtap = "register">注册</button>
+        <button class="weui-btn mini-btn" type="primary"  bindtap = "register" >注册</button>
       </view>
     </view>
   </view>
