@@ -56,13 +56,13 @@ module.exports = (function(){
                 resolve(msg +" sent successfully!")
               },
               fail: function(res) {
-                console.log(" reason:" + res)
                 reject(msg + " Failed to send!")
               }
             })
         }
         else{
             msgToSend.push(msg);
+            reject("websocket not open!")
         }
     }
 
