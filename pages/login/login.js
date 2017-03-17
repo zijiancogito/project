@@ -23,7 +23,6 @@ Page({
      //连接服务器
     connWebSocket.connect(this.commonRes,this.commonRej);
     var that = this
-
     //调用应用实例的方法获取全局数据
     app.getUserInfo(function(userInfo){
       //更新数据
@@ -47,6 +46,7 @@ Page({
     var account = this.data.loginInfo.account
     var password = this.data.loginInfo.password
     var dataSent = JSON.stringify({
+      state:1,
       acc :account,
       psw:password
     })

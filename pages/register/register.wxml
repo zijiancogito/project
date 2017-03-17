@@ -10,7 +10,7 @@
                                 <label class="weui-label"  >昵称</label>
                         </view>
                         <view class="weui-cell__bd">
-                            <input class="weui-input" placeholder="请输入昵称" />
+                            <input class="weui-input" placeholder="请输入昵称" id = "nickName" bindchange = "bindChange"/>
                         </view>
                     </view>
                 </view>
@@ -24,7 +24,7 @@
                         </picker>
                     </view>
                     <view class="weui-cell__bd weui-cell__bd_in-select-before">
-                        <input class="weui-input" placeholder="请输入号码" />
+                        <input class="weui-input" placeholder="请输入号码" id = "phoneNumber"bindchange = "bindChange"/>
                     </view>
                 </view>
             </view>
@@ -36,7 +36,7 @@
                             <label class="weui-label">密码</label>
                         </view>
                         <view class="weui-cell__bd">
-                            <input class="weui-input" placeholder="请输入密码" password="true"/>
+                            <input class="weui-input" placeholder="请输入密码" password="true" id = "password" bindchange = "bindChange"/>
                         </view>
                     </view>
                 </view>

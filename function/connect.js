@@ -46,7 +46,6 @@ module.exports = (function(){
    }
     function sendMsg(msg,resolve,reject){
         //发送消息
-        console.log("2333")
         if(typeof(msg) == "object"){
             msg = JSON.stringify(msg);
         }

@@ -1,0 +1,14 @@
+服务器-后台数据格式定义：
+login：
+{
+	state:1,
+	acc:<account>,
+	psw:<password>
+}
+register:
+{
+	state:0,
+	name:<nickName>,
+	phone:<phoneNumber>,
+	psw:<password>
+}
