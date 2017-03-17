@@ -20,9 +20,10 @@ Page({
   },
   onLoad: function () {
     console.log('onLoad')
-    var that = this
-    //连接服务器
+     //连接服务器
     connWebSocket.connect(this.commonRes,this.commonRej);
+    var that = this
+
     //调用应用实例的方法获取全局数据
     app.getUserInfo(function(userInfo){
       //更新数据
@@ -31,27 +32,18 @@ Page({
       })
     })
   },
+
   login:function(){
-    //点击login按钮时调用的函数
+    //点击login按钮时调用
     wx.showToast({
       title:"登录中……",
       icon:"loading",
       duration:10000//延时10s用于登录
     })
-    setTimeout(function(){
-      if(!isReg){
-        wx.showToast({
-          title:"登录失败，请检查网络",
-          icon:"success",
-          duration:3000
-        })
-      }
-    },9999)//10s过后，登录失败
-    this.isUser();
+    this.isUser()
   },
 
-  isUser:function(tip){
-    console.log(tip)
+  isUser:function(){
     var account = this.data.loginInfo.account
     var password = this.data.loginInfo.password
     var dataSent = JSON.stringify({
@@ -61,6 +53,7 @@ Page({
     connWebSocket.setRecvCallback(this.msgHandle)
     connWebSocket.sendMsg(dataSent,this.commonRes,this.notOnline)
   },
+
    gopage:function(url){
     wx.navigateTo({
       url: url,
@@ -93,6 +86,7 @@ Page({
         var recv = JSON.parse(data)
         var res = recv.reply
         if(res == "success"){
+            console.log("2333")
             wx.switchTab({
               url: '../dialogList/dialogList',
               success: function(res){

@@ -12,11 +12,11 @@ module.exports = (function(){
             url: servAddr,
             data: {},
             method: 'GET', 
-            success: function(res){
-                resolve("Connection established!");
+            success:function(){
+                resolve("Connection established!")
             },
-            fail: function() {
-                rej("failed to connect Server");
+            fail: function(){
+                rej("failed to connect Server")
             }
         })
     }
@@ -46,17 +46,18 @@ module.exports = (function(){
    }
     function sendMsg(msg,resolve,reject){
         //发送消息
+        console.log("2333")
         if(typeof(msg) == "object"){
             msg = JSON.stringify(msg);
         }
         if(isWebsocketOpen){
             wx.sendSocketMessage({
               data: msg,
-              success: function(res){
-                resolve(msg +" sent successfully!")
+              success: function(){
+                  resolve(msg +" sent successfully!")
               },
-              fail: function(res) {
-                reject(msg + " Failed to send!")
+              fail: function(){
+                  reject("netWork wrong")
               }
             })
         }
