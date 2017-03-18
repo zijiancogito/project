@@ -21,7 +21,7 @@ Page({
   onLoad: function () {
     console.log('onLoad')
      //连接服务器
-    connWebSocket.connect(this.commonRes,this.commonRej);
+    connWebSocket.connect(this.commonRes,this.notOnline);
     var that = this
     //调用应用实例的方法获取全局数据
     app.getUserInfo(function(userInfo){
@@ -34,6 +34,9 @@ Page({
 
   login:function(){
     //点击login按钮时调用
+    if(!connWebSocket.isWebsocketOpen){
+
+    }
     wx.showToast({
       title:"登录中……",
       icon:"loading",
@@ -86,7 +89,6 @@ Page({
         var recv = JSON.parse(data)
         var res = recv.reply
         if(res == "success"){
-            console.log("2333")
             wx.switchTab({
               url: '../dialogList/dialogList',
               success: function(res){

@@ -1,7 +1,7 @@
 module.exports = (function(){
     var isWebsocketOpen = false
     var msgToSend = []
-    var servAddr = "ws://"+"127.0.0.1" + ":8888"
+    var servAddr = "ws://"+"123.206.68.127" + ":23947"
     var msgRecved = {}
     var recvCallback = null
     var uuid = null
@@ -13,10 +13,10 @@ module.exports = (function(){
             data: {},
             method: 'GET', 
             success:function(){
-                resolve("Connection established!")
+                resolve("socket connected")
             },
             fail: function(){
-                rej("failed to connect Server")
+                rej("failed to connect socket")
             }
         })
     }
@@ -71,6 +71,7 @@ module.exports = (function(){
         connect:connect,
         sendMsg:sendMsg,
         setRecvCallback:setRecvCallback,
-        isWebsocketOpen:isWebsocketOpen
+        isWebsocketOpen:isWebsocketOpen,
+        init:init
     };
 })()
