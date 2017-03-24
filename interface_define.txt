@@ -1,4 +1,4 @@
-服务器-后台数据格式定义：
+后台->服务器数据格式定义：
 login：
 {
 	state:1,
@@ -11,4 +11,23 @@ register:
 	name:<nickName>,
 	phone:<phoneNumber>,
 	psw:<password>
+}
+获取离线消息：
+{
+	state:2,
+	myName:<userNickName>,
+	friendName:<friendNameOnMyList>
+}
+服务器->后台数据格式：
+
+login/register:
+若成功则返回"success"；若有其它状态，佳斌可以在这里更新接口
+
+离线消息发送：
+形式：对象数组
+对象内容：
+{
+	state:<0 for empty,others can be define later>
+	text:<messageStoreOnLine>
+	from:'recv',
 }
