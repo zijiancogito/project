@@ -1,33 +1,69 @@
+Part1:
 后台->服务器数据格式定义：
-login：
-{
-	state:1,
-	acc:<account>,
-	psw:<password>
-}
 register:
 {
 	state:0,
-	name:<nickName>,
-	phone:<phoneNumber>,
-	psw:<password>
+	name:<nickName>(string),
+	phone:<phoneNumber>(string),
+	psw:<password>(string)
 }
+login：
+{
+	state:1,
+	acc:<account>(string),
+	psw:<password>(string)
+}
+
 获取离线消息：
 {
 	state:2,
-	myName:<userNickName>,
-	friendName:<friendNameOnMyList>
+	myName:<userNickName>(string),
+	friendName:<friendNameOnMyList>(string)
 }
-服务器->后台数据格式：
 
-login/register:
-若成功则返回"success"；若有其它状态，佳斌可以在这里更新接口
+发送消息：
+{
+	state:3,
+	targetName:<the message's destination>(string),
+	message:<message contain>(string),
+	name:<sender's nickName>(string)
+}
+
+
+Part2:
+
+服务器->后台数据格式：
+注：数据都用对象存储，发送前用JSON.stringify转换
+
+login：
+登录成功返回"success"
+
+register:
+若成功则返回"success"；
+若有其它状态，佳斌可以在这里更新接口
 
 离线消息发送：
-形式：对象数组
-对象内容：
 {
-	state:<0 for empty,others can be define later>
-	text:<messageStoreOnLine>
-	from:'recv',
+    state:1;
+ 	log:[<object array>]
+ 	/*
+ 	 object format:
+ 	 {
+ 	 	text:<message contain>,
+ 	 	from:'recv'
+ 	 }
+ 	*/
 }
+
+离线消息发送完毕：
+{
+	state:0
+}
+
+消息转发:
+{
+	state:3,
+	message:<message from friend>(string),
+	from:<friendName>(string)	
+}
+
