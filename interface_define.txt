@@ -51,6 +51,7 @@ register:
  	 {
  	 	text:<message contain>,
  	 	from:'recv'
+ 	 	friendName:<who send this message>
  	 }
  	*/
 }

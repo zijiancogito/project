@@ -4,10 +4,10 @@
     <view class="page__bd">
         <view class="weui-cells weui-cells_after-title">
             <view class="weui-cell weui-cell_access">
-                <view class="weui-cell__bd" bindtap = "toFriend">
+                <view class="weui-cell__bd">
                     <view style="display: inline-block; vertical-align: middle">
                         <block wx:for="{{list}}">
-                            <navigator url="..//?id={{item.channel_id}}" hover-class="navigator-hover">
+                            <navigator url="../dialog/dialog?name={{item.name}}" hover-class="navigator-hover">
                                 <image src="{{item.avatar}}" class="pic"></image>
                                 <view class="right">
                                     <text class="title">{{item.name}}</text>

@@ -1,7 +1,7 @@
 module.exports = (function(){
     var isWebsocketOpen = false
     var msgToSend = []
-    var servAddr = "ws://"+"123.206.68.127" + ":23947"
+    var servAddr = "ws://"+"127.0.0.1" + ":8888"
     var msgRecved = {}
     var recvCallback = null
     var uuid = null
@@ -23,6 +23,7 @@ module.exports = (function(){
 
     function init(){
         //监听连接打开事件和收到信息事件
+        console.log("23333")
         wx.onSocketOpen(function() {
                 isWebsocketOpen = true;
                 console.log("Sockect Open!")
@@ -56,13 +57,14 @@ module.exports = (function(){
                   resolve(msg +" sent successfully!")
               },
               fail: function(){
-                  reject("netWork wrong")
+                  console.log(msg)
+                  reject("发送消息失败，但不是网络问题")
               }
             })
         }
         else{
             msgToSend.push(msg);
-            reject("websocket not open!")
+            reject("网络问题，请检查网络后刷新重试")
         }
     }
 

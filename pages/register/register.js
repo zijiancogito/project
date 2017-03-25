@@ -50,12 +50,12 @@ Page({
         })
     },
     msgHandler:function(data){
-        console.log(data)
-        if(data == "success"){
+        data = JSON.parse(data)
+        if(data.res == "success"){
             wx.showToast({
                 title:"注册成功",
                 icon:"success",
-                duration:3000
+                duration:2000
             })
             setTimeout(function(){
                 wx.switchTab({
@@ -70,13 +70,13 @@ Page({
                         // complete
                     }
                     })
-                },3000)  
+                },1000)  
         }
         else{
             wx.showToast({
                 title:"注册失败",
                 icon:"success",
-                duration:3000
+                duration:2000
             })
         }
     },

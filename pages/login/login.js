@@ -9,12 +9,12 @@ Page({
   data: {
     loginInfo:{}
   },
-  //事件处理
-  bindViewTap: function() {
-    wx.navigateTo({
-      url: '../logs/logs'
-    })
-  },
+  // //事件处理
+  // bindViewTap: function() {
+  //   wx.navigateTo({
+  //     url: '../logs/logs'
+  //   })
+  // },
   bindChange:function(e){
     this.data.loginInfo[e.currentTarget.id] = e.detail.value
   },
@@ -35,7 +35,7 @@ Page({
   login:function(){
     //点击login按钮时调用
     if(!connWebSocket.isWebsocketOpen){
-
+      //connWebSocket.connect(this.commonRes,this.notOnline);
     }
     wx.showToast({
       title:"登录中……",
