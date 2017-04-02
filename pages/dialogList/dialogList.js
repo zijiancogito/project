@@ -2,20 +2,21 @@ var promise = require("../../lib/Promise.js")
 var connSocket = require("../../function/connect.js")
 Page({
     data:{
-        list:[
-            {
-                avatar:"../../image/cao.png",
-                name:"曹颖",
-            },
-            {
-                avatar:"../../image/chen.png",
-                name:"高德",
-            },
-        ],
+        list:[],
         msgRecv:false
     },
     onLoad:function(){
         const self = this
+        var fl = wx.getStorageSync('friendList')
+        var tempList = []
+        for(var i= 0; i < fl.length;i++){
+            if(fl[i].message.length != 0){
+                tempList = [...tempList,fl[i]]
+            }
+        }
+        this.setData({
+            list:tempList
+        })
         wx.showToast({
             title:"正在从服务器加载离线消息",
             icon:"loading",
@@ -30,7 +31,7 @@ Page({
                 })
             }
         },4000);
-
+        
         connSocket.connect(self.resolve,self.reject)
         connSocket.setRecvCallback(self.msgHandler)
         var dataSent = {
@@ -59,30 +60,19 @@ Page({
         */
         var recv = JSON.parse(data)
         this.data.msgRecv = true
+        var tempList = wx.getStorageSync("friendList")
         if(recv.state === 1){
-            for(i in wx.getStorageInfoSync("friendList")){
-                if(i.name == recv.name){
-                    
+            for(var i = 0;i < tempList.length;i++){
+                if(tempList[i].name == recv.from){
+                    tempList[i].count+=recv.log.length;
+                    tempList[i].message = [...tempList[i].message,...recv.log];
+                    wx.setStorageSync('friendList',tempList)
+                    this.setData({
+                        list:[...tempList]
+                    })
+                    break;
                 }
             }
-
-            for(item in recv.log){
-                var log = {
-                    name:item.friendName,
-                    msg:[...wx.getStorageInfoSync("log"),...recv.log],
-                }
-            }
-            
-            wx.setStorage({
-              key: 'friendList',
-              data: log,
-              success: function(res){
-                  console.log("接收到离线消息")
-              },
-              fail: function() {
-                console.log("接收离线消息失败")
-              },
-            })
         }
         else if(recv.state === 0){
             wx.showToast({
@@ -90,6 +80,24 @@ Page({
                 icon:"success",
                 duration:3000
             })
+        }
+        else if(recv.state == 3){
+            //接收到在线消息
+            for(var i = 0;i<tempList.length;i++){
+                if(tempList[i].name == recv.from){
+                    var tempData = {
+                        text:recv.text,
+                        from:"recv"
+                    }
+                    tempList[i].count++;
+                    tempList[i].message = [...tempList[i].message,tempData]
+                    wx.setStorageSync('friendList', tempList)
+                    this.setData({
+                        list:[...tempList]
+                     })
+                    break;
+                }
+            }
         }
         else{
             console.log("离线消息接收时出现意外state")

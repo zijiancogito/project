@@ -7,6 +7,20 @@ App({
     wx.setStorageSync('logs', logs)
     var friendList = wx.getStorageSync('friendList')||[]        
     wx.setStorageSync('friendList', friendList)
+    var initFriend = [            
+            {
+                avatar:"../../image/cao.png",
+                name:"曹颖",
+                message:[{text:"23333",from : "sent"}],
+                count:0//未读消息数
+            },
+            {
+                avatar:"../../image/chen.png",
+                name:"高德",
+                message:[],
+                count:0
+            },]
+    wx.setStorageSync('friendList', initFriend)
   },
   
   getUserInfo:function(cb){

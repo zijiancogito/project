@@ -1,5 +1,40 @@
+var app = getApp()
 Page({
-    
+    data:{
+        username:"",
+        contact:"",
+        addition:""
+    },
+    onLoad:function(){
+        const self = this 
+        wx.getUserInfo({
+          success: function(res){
+            var userInfo = res.userInfo;
+            var name = userInfo.nickName;
+            var avatarUrl = userInfo.avatarUrl
+            var gender = userInfo.gender //性别 0：未知、1：男、2：女
+            var province = userInfo.province
+            var city = userInfo.city
+            var add =" " + province + city
+            if(gender == 1){
+                add += " 男"
+            }
+            else if(gender == 2){
+                add += " 女"
+            }
+            else{
+                add += " 未知性别"
+            }
+            self.setData({
+                username:name,
+                addition:add
+            })
+          },
+          fail: function() {
+            console.log("获取用户信息失败")
+          },
+        })
+    },
     confDel: function () {
         wx.showModal({
             content: '确定要删除所有的聊天记录吗？',

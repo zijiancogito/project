@@ -1,5 +1,6 @@
 var conn = require( "../../function/connect.js")
 var app = getApp()
+var tempList
 Page({
   data:{
     messages:[],
@@ -15,6 +16,20 @@ Page({
     this.setData({
       friendName:options["name"],
     })
+    var tempList = wx.getStorageSync('friendList')
+    var msg = []
+    tempList = wx.getStorageSync('friendList')
+    for(var i = 0; i < tempList.length;i++){
+      if(tempList[i].name == options["name"] && tempList[i].message.length != 0){
+          tempList[i].count = 0//清空未读消息数
+          wx.setStorageSync('friendList', tempList)
+          msg = [...tempList[i].message]
+          break;
+        }
+    }
+    self.setData({
+      messages:[...msg]//显示未读消息
+    })
     app.getUserInfo(function(data){
         self.setData({
             userName:data.nickName
@@ -23,23 +38,24 @@ Page({
     wx.setNavigationBarTitle({
         title: self.data.friendName 
     });
+  },
+  onUnload:function(){
+    // 页面关闭
     wx.showModal({
-      title:"提示",
-      content:"是否加载本地消息记录？",
-      cancelText:"不加载",
-      cancelColor:"#FF0000",
-      confirmText:"加载",
+      title:"是否保留此次会话记录？",
+      content:"‘不保留’仅删除本次聊天的记录，之前的记录不会被删除",
+      cancelText:"不保留",
+      confirmText:"保留",
       success:function(res){
         if(res.confirm){
-          //点击加载按钮
-          
+          wx.setStorageSync('friendList', tempList)
         }
+        console.log("显示成功")
       },
-      fail:function(res){
-        console.log("confirm wrong!")
-      },
-    });
-    
+      fail:function(){
+        console.log("显示失败")
+      }
+    })
   },
   gopage:function(url){
       wx.navigateTo({
@@ -52,7 +68,6 @@ Page({
         },
       })
   },
-
 
   bindChange(e) {
         this.data.inputContent[e.currentTarget.id] = e.detail.value
@@ -95,13 +110,8 @@ Page({
     */
     var recv = JSON.parse(data)
     this.data.msgRecv = true
-    if(recv.state === 1){
-      this.setData({
-        messages:[...messages,...recv.log]
-      })
-    }
-    else if(recv.state === 3 && recv.from == self.data.friendName){
-      //接收到的是消息
+    if(recv.state === 3 && recv.from == self.data.friendName){
+      //接收到的是当前会话窗口好友的在线消息
        this.setData({
           messages: [...this.data.messages, {
                   text: recv.message,
@@ -110,16 +120,21 @@ Page({
        })
     }
     else if(recv.state === 3 && recv.from != self.data.friendName){
-      console.log("意外情况")
+      //收到的是其他好友的在线消息
+      for(var i = 0; i< tempList.length;i++){
+        if(tempList[i].name == recv.from){
+            var tempData = {
+              text:recv.text,
+              from:"recv"
+            }
+            tempList[i].message = [...tempList[i].message,tempData];
+            break;
+        } 
+      }
     }
-    else if(recv.state === 0){
-       wx.showToast({
-        title:"接收离线消息完毕！",
-        icon:"success",
-        duration:3000
-      })
+    else{
+      console.log("dialog消息处理有问题")
     }
-
   },
   resolve:function(data){
     console.log(data)

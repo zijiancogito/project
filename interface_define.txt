@@ -44,14 +44,14 @@ register:
 
 离线消息发送：
 {
-    state:1;
- 	log:[<object array>]
+    state:1,
+ 	log:[<object array>],
+ 	from:<who send this message>
  	/*
  	 object format:
  	 {
  	 	text:<message contain>,
- 	 	from:'recv'
- 	 	friendName:<who send this message>
+ 	 	from:"recv"
  	 }
  	*/
 }
@@ -64,7 +64,7 @@ register:
 消息转发:
 {
 	state:3,
-	message:<message from friend>(string),
+	text:<message from friend>(string),
 	from:<friendName>(string)	
 }
 
