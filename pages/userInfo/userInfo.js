@@ -40,13 +40,18 @@ Page({
             content: '确定要删除所有的聊天记录吗？',
             showCancel: true,
             success: function (res) {
-                if (res.confirm) {
+                 if (res.confirm) {
                     console.log('用户点击确定')
+                    var temp = wx.getStorageSync('friendList')
+                    for(var i = 0; i < temp.length;i++){
+                        temp[i].message = []
+                    }
+                    wx.setStorageSync('friendList', temp)
                     wx.showToast({
-                        title: '删除完成',
-                        icon: 'success',
-                        duration: 3000
-                    });
+                        title:"聊天记录已成功删除",
+                        duration:3000,
+                        icon:"success"
+                    })
                 }
             }
         });
@@ -56,19 +61,20 @@ Page({
             content: '确定要退出吗？',
             showCancel: true,
             success: function (res) {
-                if (res.confirm) {
-                    console.log('用户点击确定')
-                    wx.navigateTo({
-                        url: '../login/login',
-                        success: function(res){
-                            console.log("navigate to ../login/login")
-                        },
-                        fail: function() {
-                            console.log("navigate failed")
-                        },
-                    })
-
-                }
+                wx.showToast({
+                    title:"成功退出",
+                    duration:1000,
+                    icon:"success"
+                })
+                wx.navigateTo({
+                  url: '../login/login',
+                  success: function(res){
+                    console.log("navigate to login")
+                  },
+                  fail: function() {
+                    console.log("navigate to login failed")
+                  },
+                })
             }
         });
     }

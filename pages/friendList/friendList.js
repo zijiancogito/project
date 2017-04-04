@@ -1,12 +1,12 @@
 // pages/friendList/friendList.js
 Page({
-  
-    friendInfo:function(){
-        this.gopage("../friendInfo(detail)/friendInfo(detail)")
-    },
-  data:{},
+  data:{
+    temp :[]
+  },
   onLoad:function(options){
-    // 页面初始化 options为页面跳转所带来的参数
+    this.setData({
+      temp:wx.getStorageSync('friendList')
+    })
   },
   onReady:function(){
     // 页面渲染完成
@@ -19,5 +19,8 @@ Page({
   },
   onUnload:function(){
     // 页面关闭
-  }
+  },  
+  friendInfo:function(){
+      this.gopage("../friendInfo(detail)/friendInfo(detail)")
+  },
 })

@@ -1,7 +1,6 @@
 {
   "pages":[
     "pages/login/login",
-    "pages/chattingLogs/chattingLogs",
     "pages/friendInfo(simple)/friendInfo(simple)",
     "pages/friendInfo(detail)/friendInfo(detail)",
     "pages/login/login",

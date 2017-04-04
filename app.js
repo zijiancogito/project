@@ -11,12 +11,16 @@ App({
             {
                 avatar:"../../image/cao.png",
                 name:"曹颖",
+                asume:"1232",
+                contact:"12321312",
                 message:[{text:"23333",from : "sent"}],
                 count:0//未读消息数
             },
             {
                 avatar:"../../image/chen.png",
                 name:"高德",
+                asume:"",
+                contact:"",
                 message:[],
                 count:0
             },]
