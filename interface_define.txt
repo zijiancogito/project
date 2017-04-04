@@ -29,6 +29,13 @@ login：
 	name:<sender's nickName>(string)
 }
 
+查找好友：
+{
+	state:4,
+	search:<phoneNumber>(string),
+	requirer:<user who send this require>
+}
+
 
 Part2:
 
@@ -66,5 +73,20 @@ register:
 	state:3,
 	text:<message from friend>(string),
 	from:<friendName>(string)	
+}
+
+查找好友信息返回：
+{
+	state:<4 for has result and others for None>
+	info:<the info of whose phoneNumber matches the prefix of the require>(object array)
+	/*
+		object:{
+			name:(string),
+			phoneNumber:(string),
+			asume:<the asume which was filled when register>(string)
+		}
+
+	}
+	 */
 }
 

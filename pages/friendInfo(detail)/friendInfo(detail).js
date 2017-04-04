@@ -34,9 +34,6 @@ Page({
     startDialog:function(){
         this.gopage("../dialog/dialog?name=" + this.data.friendName)
     },
-    chatlog:function(){
-        this.gopage("../chatlog/chatlog?name=" + this.data.friendName)
-    },
     gopage:function(url){
             wx.navigateTo({
             url: url,

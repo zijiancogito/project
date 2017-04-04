@@ -27,7 +27,6 @@
         <view class="space" style="height:45rpx"></view>
         <view class="weui-btn-area">
             <button class="weui-btn" type="primary" bindtap="startDialog">发起会话</button>
-            <button class="weui-btn" type="primary" bindtap="chatlog">查看聊天记录</button>
         </view>
     </view>
 </view>

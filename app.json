@@ -10,7 +10,6 @@
     "pages/dialog/dialog",
     "pages/dialogList/dialogList",
     "pages/findFriend/findFriend",
-    "pages/chatlog/chatlog",
     "pages/friendList/friendList"
   ],
   "window":{

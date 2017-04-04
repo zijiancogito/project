@@ -24,7 +24,6 @@ Page({
     connWebSocket.connect(this.commonRes,this.notOnline);
     var that = this
     //调用应用实例的方法获取全局数据
-    console.log(app)
     app.getUserInfo(function(userInfo){
       //更新数据
       that.setData({
