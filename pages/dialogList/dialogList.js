@@ -1,14 +1,22 @@
 var promise = require("../../lib/Promise.js")
 var connSocket = require("../../function/connect.js")
+var app = getApp()
 Page({
     data:{
         list:[],
-        msgRecv:false
+        msgRecv:false,
+        userInfo:{}
     },
     onLoad:function(){
         const self = this
         var fl = wx.getStorageSync('friendList')
         var tempList = []
+        app.getUserInfo(function(userInfo){
+        //更新数据
+            self.setData({
+                userInfo:userInfo
+            })
+        })
         for(var i= 0; i < fl.length;i++){
             if(fl[i].message.length != 0){
                 tempList = [...tempList,fl[i]]
@@ -36,8 +44,7 @@ Page({
         connSocket.setRecvCallback(self.msgHandler)
         var dataSent = {
             state:2,
-            myName:self.data.userName,
-            friendName:self.data.friendName
+            myName:self.data.userInfo.nickName,
         }
         //connSocket.sendMsg(dataSent,self.resolve,self.reject)
         setTimeout(function(){ 

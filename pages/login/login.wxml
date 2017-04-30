@@ -7,32 +7,10 @@
     <text class="userinfo-nickname">{{userInfo.nickName}}</text>
   
   </view>
-  
-  <view class="weui-cell weui-cell_vcode">
-    <view class="weui-cell__hd">
-        <label class="weui-label"  >账号</label>
-    </view>
-    <view class="weui-cell__bd">
-        <input class="weui-input" type="tel" id = "account" bindchange = "bindChange"/>
-    </view>
-  </view>
-  <view class="weui-cell weui-cell_vcode">
-    <view class="weui-cell__hd">
-        <label class="weui-label">密码</label>
-    </view>
-    <view class="weui-cell__bd">
-        <input class="weui-input" type="tel" id ="password" bindchange = "bindChange"/>
-    </view>
-  </view>
-  
+ 
     <view class="page__bd page__bd_spacing">
-      <view class="button-sp-area">
-        <button class="weui-btn mini-btn" type="primary" bindtap = "login" >登录</button>
-      </view>
-      <view class="space" style="height:20rpx;"></view>
-      <view class="button-sp-area">
-        <button class="weui-btn mini-btn" type="primary"  bindtap = "register" >注册</button>
-      </view>
+      Welcome To Secert Messaging!
+      Login...
     </view>
   </view>
 </view>

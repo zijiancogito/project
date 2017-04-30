@@ -5,7 +5,6 @@
     "pages/friendInfo(detail)/friendInfo(detail)",
     "pages/login/login",
     "pages/protocol/protocol",
-    "pages/register/register",
     "pages/userInfo/userInfo",
     "pages/dialog/dialog",
     "pages/dialogList/dialogList",

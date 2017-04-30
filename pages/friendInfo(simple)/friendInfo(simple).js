@@ -23,6 +23,7 @@ Page({
             count:0//未读消息数
         })
         wx.setStorageSync('friendList', temp)
+        console.log(temp)
         this.gopage("../friendList/friendList")
     },
     gopage:function(url){
