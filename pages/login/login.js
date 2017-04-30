@@ -5,7 +5,8 @@ var app = getApp()
 const self = this
 Page({
   data: {
-    encryptedInfo:{}
+    encryptedInfo:{},
+    iv :""
   },
   // //事件处理
   // bindViewTap: function() {
@@ -22,10 +23,11 @@ Page({
     connWebSocket.connect(this.commonRes,this.commonRej);
     var that = this
     //获取加密敏感数据
-    this.getEncryptedInfo(function(e){
+    this.getEncryptedInfo(function(){
       var dataSent ={
-        state : 2,
-        encInfo:e
+        state : 1,
+        encInfo:that.data.encryptedInfo,
+        iv:that.data.iv
       }
       connWebSocket.setRecvCallback(this.msgHandle)
       connWebSocket.sendMsg(dataSent,this.commonRes,this.commonRej)
@@ -39,13 +41,14 @@ Page({
   },
   getEncryptedInfo:function(cb){
     var that = this
-    if(this.data.encryptedInfo){
-      typeof cb == "function" && cb(this.data.encryptedInfo)
+    if(this.data.encryptedInfo && this.data.iv){
+      typeof cb == "function" && cb()
     }else{
       wx.getUserInfo({
         success: function (res) {
           that.data.encryptedInfo = res.encryptedData
-          typeof cb == "function" && cb(that.data.encryptedInfo)
+          that.data.iv = res.iv
+          typeof cb == "function" && cb()
         }
       })
     }
