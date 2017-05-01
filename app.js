@@ -1,4 +1,5 @@
 //app.js
+var conn = require("/function/connect.js")
 App({
   onLaunch: function () {
     //调用API从本地缓存中获取数据
@@ -34,7 +35,11 @@ App({
     }else{
       //调用登录接口
       wx.login({
-        success: function () {
+        success: function (res) {
+          dataSent = {
+            state:1,
+            code:res.code
+          }
           wx.getUserInfo({
             success: function (res) {
               that.globalData.userInfo = res.userInfo

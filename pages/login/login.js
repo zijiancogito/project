@@ -22,6 +22,17 @@ Page({
      //连接服务器
     connWebSocket.connect(this.commonRes,this.commonRej);
     var that = this
+    //发送code
+    wx.login({
+      success: function (res) {
+        var dataSent = {
+          state:1,
+          code:res.code
+        }
+        connWebSocket.setRecvCallback(that.sessionKeyRecv)
+        connWebSocket.sendMsg(dataSent,that.commonRes,that.commonRej)
+        }
+      })
     //获取加密敏感数据
     this.getEncryptedInfo(function(){
       var dataSent ={
@@ -29,8 +40,8 @@ Page({
         encInfo:that.data.encryptedInfo,
         iv:that.data.iv
       }
-      connWebSocket.setRecvCallback(this.msgHandle)
-      connWebSocket.sendMsg(dataSent,this.commonRes,this.commonRej)
+      connWebSocket.setRecvCallback(that.msgHandle)
+      connWebSocket.sendMsg(dataSent,that.commonRes,that.commonRej)
     })
   },
   commonRes:function(result){
@@ -53,10 +64,16 @@ Page({
       })
     }
   },
+  sessionKeyRecv:function(res){
+    var recv = JSON.parse(data)
+    var res = recv.reply
+  },
   msgHandle:function(data){
         var recv = JSON.parse(data)
         var res = recv.reply
+        var secKey = recv.secKey
         if(res == "success"){
+            wx.setStorageSync('secKey',secKey)
             wx.switchTab({
               url: '../dialogList/dialogList',
               success: function(res){

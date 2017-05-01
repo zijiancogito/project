@@ -1,7 +1,7 @@
 module.exports = (function(){
     var isWebsocketOpen = false
     var msgToSend = []
-    var servAddr = "ws://"+"127.0.0.1" + ":8888"
+    var servAddr = "ws://"+"127.0.0.1" + ":12345"
     var msgRecved = {}
     var recvCallback = null
     var uuid = null
