@@ -1,10 +1,12 @@
 //app.js
 var conn = require("/function/connect.js")
+var event = require('lib/event.js')
 App({
   onLaunch: function () {
     //调用API从本地缓存中获取数据
     var logs = wx.getStorageSync('logs') || []
     logs.unshift(Date.now())
+    event(this)
     wx.setStorageSync('logs', logs)
     var friendList = wx.getStorageSync('friendList')||[]        
     wx.setStorageSync('friendList', friendList)
@@ -36,10 +38,6 @@ App({
       //调用登录接口
       wx.login({
         success: function (res) {
-          dataSent = {
-            state:1,
-            code:res.code
-          }
           wx.getUserInfo({
             success: function (res) {
               that.globalData.userInfo = res.userInfo

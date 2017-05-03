@@ -35,6 +35,17 @@ Page({
           },
         })
     },
+    showCode:function(){
+        wx.navigateTo({
+          url: '../QRCode/QRCode',
+          success: function(res){
+            console.log(res)
+          },
+          fail: function() {
+            console.log("navigate to QRCode failed")
+          }
+        })
+    },
     confDel: function () {
         wx.showModal({
             content: '确定要删除所有的聊天记录吗？',
@@ -61,20 +72,22 @@ Page({
             content: '确定要退出吗？',
             showCancel: true,
             success: function (res) {
-                wx.showToast({
-                    title:"成功退出",
-                    duration:1000,
-                    icon:"success"
-                })
-                wx.navigateTo({
-                  url: '../login/login',
-                  success: function(res){
-                    console.log("navigate to login")
-                  },
-                  fail: function() {
-                    console.log("navigate to login failed")
-                  },
-                })
+                if(res.confirm){
+                    wx.showToast({
+                        title:"成功退出",
+                        duration:1000,
+                        icon:"success"
+                    })
+                    wx.navigateTo({
+                    url: '../login/login',
+                    success: function(res){
+                        console.log("navigate to login")
+                    },
+                    fail: function() {
+                        console.log("navigate to login failed")
+                    },
+                    })
+                }
             }
         });
     }

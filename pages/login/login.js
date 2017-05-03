@@ -2,25 +2,21 @@
 //获取应用实例
 var connWebSocket = require("../../function/connect.js")
 var app = getApp()
+var scan = '../scanQRCode/scanQRCode'
+var code = '../QRCode/QRCode'
 const self = this
 Page({
   data: {
     encryptedInfo:{},
     iv :""
   },
-  // //事件处理
-  // bindViewTap: function() {
-  //   wx.navigateTo({
-  //     url: '../logs/logs'
-  //   })
-  // },
   bindChange:function(e){
     this.data.loginInfo[e.currentTarget.id] = e.detail.value
   },
   onLoad: function () {
     console.log('onLoad')
      //连接服务器
-    connWebSocket.connect(this.commonRes,this.commonRej);
+    //connWebSocket.connect(this.commonRes,this.commonRej);
     var that = this
     //发送code
     wx.login({
@@ -33,16 +29,33 @@ Page({
         connWebSocket.sendMsg(dataSent,that.commonRes,that.commonRej)
         }
       })
+      wx.checkSession({
+        success:function(){
+          console.log("you are online")
+          wx.switchTab({
+            url: '../friendList/friendList',
+            success: function(res){
+              console.log(res)
+            },
+            fail: function() {
+              console.log("switch failed")
+            }
+          })
+        },
+        fail:function(){
+          wx.login({
+            success: function (res) {
+              var dataSent = {
+                state:1,
+                code:res.code
+              }
+              connWebSocket.setRecvCallback(that.sessionKeyRecv)
+              connWebSocket.sendMsg(dataSent,that.commonRes,that.commonRej)
+            },
+          })
+        }
+      })
     //获取加密敏感数据
-    this.getEncryptedInfo(function(){
-      var dataSent ={
-        state : 1,
-        encInfo:that.data.encryptedInfo,
-        iv:that.data.iv
-      }
-      connWebSocket.setRecvCallback(that.msgHandle)
-      connWebSocket.sendMsg(dataSent,that.commonRes,that.commonRej)
-    })
   },
   commonRes:function(result){
       console.log(result)
@@ -66,7 +79,8 @@ Page({
   },
   sessionKeyRecv:function(res){
     var recv = JSON.parse(data)
-    var res = recv.reply
+    var result = recv.reply
+    console.log(result)
   },
   msgHandle:function(data){
         var recv = JSON.parse(data)

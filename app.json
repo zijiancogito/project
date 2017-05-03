@@ -9,7 +9,10 @@
     "pages/dialog/dialog",
     "pages/dialogList/dialogList",
     "pages/findFriend/findFriend",
-    "pages/friendList/friendList"
+    "pages/friendList/friendList",
+    "pages/QRCode/QRCode",
+    "pages/scanQRCode/scanQRCode",
+    "pages/gestureCode/gestureCode"
   ],
   "window":{
     "backgroundTextStyle":"light",
