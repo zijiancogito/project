@@ -1,10 +1,12 @@
 //index.js
 //获取应用实例
 var connWebSocket = require("../../function/connect.js")
+var Promise = require("../../lib/Promise.js")
 var app = getApp()
 var scan = '../scanQRCode/scanQRCode'
 var code = '../QRCode/QRCode'
 const self = this
+var trd_recv_state = 1
 Page({
   data: {
     encryptedInfo:{},
@@ -29,18 +31,29 @@ Page({
         connWebSocket.sendMsg(dataSent,that.commonRes,that.commonRej)
         }
       })
-      wx.checkSession({
+    wx.checkSession({
         success:function(){
           console.log("you are online")
-          wx.switchTab({
-            url: '../friendList/friendList',
-            success: function(res){
-              console.log(res)
-            },
-            fail: function() {
-              console.log("switch failed")
+          setTimeout(function(){
+            if(trd_recv_state){
+              wx.switchTab({
+                url: '../friendList/friendList',
+                success: function(res){
+                  console.log(res)
+                },
+                fail: function() {
+                  console.log("switch failed")
+                }
+              })
             }
-          })
+            else{
+              wx.showToast({
+                title:"登录超时，请刷新重试",
+                duration:3000,
+                icon:"loading"
+              })
+            }
+          },3000)
         },
         fail:function(){
           wx.login({
@@ -78,41 +91,50 @@ Page({
     }
   },
   sessionKeyRecv:function(res){
-    var recv = JSON.parse(data)
+    var recv = JSON.parse(res)
     var result = recv.reply
     console.log(result)
+    wx.setStorageSync('trd_session_key', result.third)
+    trd_recv_state = 1
   },
-  msgHandle:function(data){
-        var recv = JSON.parse(data)
-        var res = recv.reply
-        var secKey = recv.secKey
-        if(res == "success"){
-            wx.setStorageSync('secKey',secKey)
-            wx.switchTab({
-              url: '../dialogList/dialogList',
-              success: function(res){
-                wx.showToast({
-                  title:"Hello World!",
-                  icon:"success",
-                  duration:3000
-                })
-              },
-              fail: function() {
-                wx.showToast({
-                  title:"Failed to login!",
-                  icon:"success",
-                  duration:3000
-              }),
-              console.log("jump to fail" )
-          },
-        })
-      }
-      else{
-        wx.showToast({
-          title:"用户名或密码错误",
-          icon:"scuess",
-          duration:3000
-        })
-      }
+  onPullDownRefresh:function(){
+    var that = this
+    wx.login({
+      success: function (res) {
+        var dataSent = {
+          state:1,
+          code:res.code
+        }
+        connWebSocket.setRecvCallback(that.sessionKeyRecv)
+        connWebSocket.sendMsg(dataSent,that.commonRes,that.commonRej)
+        }
+      })
+    wx.checkSession({
+        success:function(){
+          console.log("you are online")
+          setTimeout(function(){
+            if(trd_recv_state){
+              wx.stopPullDownRefresh()
+              wx.switchTab({
+                url: '../friendList/friendList',
+                success: function(res){
+                  console.log(res)
+                },
+                fail: function() {
+                  console.log("switch failed")
+                }
+              })
+            }
+            else{
+              wx.stopPullDownRefresh()
+              wx.showToast({
+                title:"服务器连接超时,请刷新重试",
+                duration:3000,
+                icon:"loading"
+              })
+            }
+          },3000)
+        }
+      })
     }
 })

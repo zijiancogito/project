@@ -32,9 +32,6 @@
         </view>
         <view class="space" style="height:20rpx"></view>
         <view class="weui-btn-area">
-            <button class="weui-btn" type="warn" bindtap="confExit">退出登陆</button>
-        </view>
-        <view class="weui-btn-area">
             <button class="weui-btn" type="warn" bindtap="showCode">我的二维码</button>
         </view>
     </view>

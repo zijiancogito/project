@@ -67,28 +67,4 @@ Page({
             }
         });
     },
-    confExit: function () {
-        wx.showModal({
-            content: '确定要退出吗？',
-            showCancel: true,
-            success: function (res) {
-                if(res.confirm){
-                    wx.showToast({
-                        title:"成功退出",
-                        duration:1000,
-                        icon:"success"
-                    })
-                    wx.navigateTo({
-                    url: '../login/login',
-                    success: function(res){
-                        console.log("navigate to login")
-                    },
-                    fail: function() {
-                        console.log("navigate to login failed")
-                    },
-                    })
-                }
-            }
-        });
-    }
 })

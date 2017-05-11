@@ -1,4 +1,5 @@
 var Lock = require('../../lib/lock.js');
+var sha256 = require("../../crypto/sha256.js");
 var app = getApp();
 var qrApi = "https://www.mrxn.net/mrxnqrapi/api.php"
 var text = ""
@@ -8,6 +9,7 @@ Page({
         title: '绘制暗号',
     },
     onLoad: function () {
+        wx.stopPullDownRefresh()
         this.lock = new Lock(this);
     },
     resetPwd: function() {
@@ -15,7 +17,6 @@ Page({
     },
     onSuccess:function(){
         text = JSON.parse(wx.getStorageSync('commonSecret'))
-        console.log("your secert is"+text)
          wx.showToast({
              title:"二维码生成中...",
             duration:1000,
@@ -24,6 +25,9 @@ Page({
         for(var i = 0; i < text.length;i++){
            code += text[i]["index"]
         }
+        console.log("your secert is"+code)
+        var enc = sha256(code)
+        console.log(enc)
         console.log(qrApi + "?data=" + code)
         wx.previewImage({
             // current: 'String', // 当前显示图片的链接，不填则默认为 urls 的第一张

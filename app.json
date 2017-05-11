@@ -18,7 +18,8 @@
     "backgroundTextStyle":"light",
     "navigationBarBackgroundColor": "#000",
     "navigationBarTitleText": "SecretMessaging",
-    "navigationBarTextStyle":"light"
+    "navigationBarTextStyle":"light",
+    "enablePullDownRefresh":true
   },
   "tabBar": {
     "color":"#a9b7b7",
