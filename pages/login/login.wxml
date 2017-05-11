@@ -2,7 +2,6 @@
 <view class="container">
 <view class="page">
   <view  bindtap="bindViewTap" class="userinfo">
-  
     <image class="userinfo-avatar" src="../../image/logo.png" background-size="cover"></image>
     <text class="userinfo-nickname">{{userInfo.nickName}}</text>
   
@@ -12,5 +11,6 @@
       Welcome To Secert Messaging!
       Login...
     </view>
+    <image class="userinfo-avatar" src="../../image/login_wait.gif" background-size="cover"></image>
   </view>
 </view>

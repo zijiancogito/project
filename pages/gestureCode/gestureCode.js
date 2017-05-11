@@ -6,7 +6,7 @@ var text = ""
 var code = ""
 Page({
     data: {
-        title: '绘制暗号',
+        title: '绘制Secert',
     },
     onLoad: function () {
         wx.stopPullDownRefresh()
@@ -27,11 +27,15 @@ Page({
         }
         console.log("your secert is"+code)
         var enc = sha256(code)
-        console.log(enc)
-        console.log(qrApi + "?data=" + code)
+        var encArray = enc.words
+        var encString = ""
+        for(var i = 0;i < 8;i++){
+           encString += encArray[i].toString(16)
+        }
+        console.log(qrApi + "?data=" + encString)
         wx.previewImage({
             // current: 'String', // 当前显示图片的链接，不填则默认为 urls 的第一张
-            urls: [qrApi + "?data=" + code],
+            urls: [qrApi + "?data=" + encString],
             success: function(res){
                 console.log(res)
             },
