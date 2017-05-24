@@ -1,4 +1,6 @@
 var conn = require( "../../function/connect.js")
+var rsaEnc = require("../../rsa/cryptico.js")
+var aesEnc = require("../../crypto/crypto-js.js")
 var app = getApp()
 var tempList
 Page({
@@ -85,14 +87,13 @@ Page({
             inputValue : ''
         })
         const _self = this
-        console.log(_self)
+        var trd = wx.getStorageSync("trd_session_key")
         var dataSent = {
-                state:3,
-                targetName:_self.data.friendName,
+                friendSecret:_self.data.friendName,//好友长期秘密存储
                 message:_self.data.messages[_self.data.messages.length - 1].text,
-                name:_self.data.userName
+                trd: trd
         }
-        conn.sendMsg(dataSent,this.resolve,this.reject);
+        this.sendAESdata(dataSent,3)
     },
   msgHandler:function(data){
     //离线消息暂时用数组传输，视服务器方便而定
@@ -141,5 +142,30 @@ Page({
   },
   reject:function(data){
     console.log(data)
-  }
+  },
+  sendAESdata: function (data2enc,state) {
+    var pwd = "123456"//用于生成aes密钥的字串，待改进
+    var textEnc = aesEnc.AES.encrypt(JSON.stringify(data2enc), pwd)
+    var aeskey = textEnc.key.toString()
+    wx.setStorage({
+      key: 'aeskey2server',
+      data: pwd,
+      success: function () {
+        console.log("set aeskey successs")
+      },
+      fail: function (res) {
+        console.log(res)
+      }
+    })
+    var aesKeyEnc = rsaEnc.cryptico.encrypt(aeskey, wx.getStorageSync("server_public_key"));
+    var textSent = textEnc.ciphertext.toString()
+    var that = this
+    var dataSent = {
+      state: state,
+      aeskeyEnc: aesKeyEnc.cipher,
+      aesEncText: textSent
+    }
+    console.log(dataSent)
+    conn.sendMsg(dataSent, that.resolve, that.reject)
+  },
 })

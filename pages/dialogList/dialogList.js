@@ -1,5 +1,7 @@
 var promise = require("../../lib/Promise.js")
 var connSocket = require("../../function/connect.js")
+var rsaEnc = require("../../rsa/cryptico.js")
+var aesEnc = require("../../crypto/crypto-js.js")
 var app = getApp()
 Page({
     data:{
@@ -39,24 +41,50 @@ Page({
                 })
             }
         },4000);
-        
         connSocket.connect(self.resolve,self.reject)
         connSocket.setRecvCallback(self.msgHandler)
+        var trd = wx.getStorageSync("trd_session_key")
+        var seq = wx.getStorageSync("seq")
         var dataSent = {
-            state:2,
-            myName:self.data.userInfo.nickName,
+            trd:trd,
+            seq:seq
         }
-        //connSocket.sendMsg(dataSent,self.resolve,self.reject)
         setTimeout(function(){ 
-            connSocket.sendMsg(dataSent,self.resolve,self.reject)
+          self.sendAESdata(dataSent,2)
         },1000)
+    },
+    sendAESdata: function (data2enc, state) {
+      var pwd = "123456"//用于生成aes密钥的字串，待改进
+      var textEnc = aesEnc.AES.encrypt(JSON.stringify(data2enc), pwd)
+      var aeskey = textEnc.key.toString()
+      wx.setStorage({
+        key: 'aeskey2server',
+        data: pwd,
+        success: function () {
+          console.log("set aeskey successs")
+        },
+        fail: function (res) {
+          console.log(res)
+        }
+      })
+      var aesKeyEnc = rsaEnc.cryptico.encrypt(aeskey, wx.getStorageSync("server_public_key"));
+      var textSent = textEnc.ciphertext.toString()
+      var that = this
+      var dataSent = {
+        state: state,
+        aeskeyEnc: aesKeyEnc.cipher,
+        aesEncText: textSent
+      }
+      console.log(dataSent)
+      connSocket.sendMsg(dataSent, that.resolve, that.reject)
     },
     msgHandler:function(data){
         //离线消息暂时用数组传输，视服务器方便而定
         /*
         数组元素格式{
                 text: "",
-                from: 'recv'
+                from: friendID,
+                time:send time
             }
         若要传输图片，则格式如下：
             {
@@ -129,4 +157,3 @@ Page({
         console.log(data)
     }
 })
-
