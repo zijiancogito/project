@@ -11,6 +11,7 @@ const self = this
 var trd_recv_state = 0
 Page({
   data: {
+    animationData: {}
   },
   bindChange:function(e){
     this.data.loginInfo[e.currentTarget.id] = e.detail.value
@@ -101,7 +102,7 @@ Page({
       trd: res.reply,
       seq: 0
     }
-    var textEnc = aesEnc.AES.encrypt(JSON.stringify(data2enc),aesk)
+    var textEnc = aesEnc.AES.encrypt(JSON.stringify(data2enc),pwd)
     var aeskey = textEnc.key.toString()
     wx.setStorage({
       key: 'aeskey2server',
@@ -115,12 +116,13 @@ Page({
     })
     var aesKeyEnc = rsaEnc.cryptico.encrypt(aeskey, wx.getStorageSync("server_public_key"));
     console.log(aesKeyEnc.cipher)
+    var that = this
     var dataSent = {
       state:2,
       aeskeyEnc: aesKeyEnc.cipher,
       aesEncText: textEnc
     } 
-    connWebSocket.sendMsg(dataSent,commonRes,commonRej)
+    connWebSocket.sendMsg(dataSent,that.commonRes,that.commonRej)
   },
   onPullDownRefresh:function(){
     var that = this

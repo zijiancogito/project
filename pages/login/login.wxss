@@ -23,3 +23,8 @@
 .space{
   background-color: #fff;
 }
+.weui-progress{
+    margin-bottom: 24px;
+}
+
+

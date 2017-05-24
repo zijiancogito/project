@@ -1,14 +1,11 @@
 {
   "pages":[
     "pages/login/login",
-    "pages/friendInfo(simple)/friendInfo(simple)",
     "pages/friendInfo(detail)/friendInfo(detail)",
-    "pages/login/login",
     "pages/protocol/protocol",
     "pages/userInfo/userInfo",
     "pages/dialog/dialog",
     "pages/dialogList/dialogList",
-    "pages/findFriend/findFriend",
     "pages/friendList/friendList",
     "pages/QRCode/QRCode",
     "pages/scanQRCode/scanQRCode",
@@ -44,12 +41,6 @@
       "text": "好友",
       "iconPath": "image/friend.png",
       "selectedIconPath": "image/friend.png"
-    },
-    {
-      "pagePath": "pages/findFriend/findFriend",
-      "text": "找基友",
-      "iconPath": "image/search.png",
-      "selectedIconPath": "image/search.png"
     }]
   }
 }
