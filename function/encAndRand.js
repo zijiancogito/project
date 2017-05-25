@@ -11,9 +11,10 @@ function random(){
 function sendEncData(data2enc, state) {
   var pwd = random().toString()//用于生成aes密钥的字串，待改进
   var textEnc = aesEnc.AES.encrypt(JSON.stringify(data2enc), pwd)
-  console.log(textEnc.iv)
-  console.log(textEnc.key)
+  console.log("aes iv = "+textEnc.iv)
+  console.log("aes key = " +textEnc.key)
   var aeskey = textEnc.key.toString()
+  var aesiv = textEnc.iv.toString()
   console.log(aeskey)
   wx.setStorage({
     key: 'aeskey2server',
@@ -25,7 +26,7 @@ function sendEncData(data2enc, state) {
       console.log(res)
     }
   })
-  var aesKeyEnc = rsaEnc.cryptico.encrypt(aeskey, wx.getStorageSync("server_public_key"));
+  var aesKeyEnc = rsaEnc.cryptico.encrypt(aeskey + "|" + aesiv, wx.getStorageSync("server_public_key"));
   var textSent = textEnc.ciphertext.toString()
   var that = this
   var dataSent = {
