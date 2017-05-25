@@ -1,21 +1,21 @@
 //index.js
 //获取应用实例
-var rsaEnc = require("../../rsa/cryptico.js")
-var aesEnc = require("../../crypto/crypto-js.js")
+var enc = require("../../function/encAndRand.js")
 var connWebSocket = require("../../function/connect.js")
 var Promise = require("../../lib/Promise.js")
 var app = getApp()
 var scan = '../scanQRCode/scanQRCode'
 var code = '../QRCode/QRCode'
-const self = this
-var trd_recv_state = 1
+var tempId = ""
+var trd_recv_state = 0
+var isShared = 0
 Page({
   data: {
   },
   bindChange:function(e){
     this.data.loginInfo[e.currentTarget.id] = e.detail.value
   },
-  onLoad: function () {
+  onLoad: function (options) {
     //test data
     // var phrase = "1234"
     // var pubkey = rsaEnc.cryptico.generateRSAKey(phrase,2048)
@@ -26,52 +26,83 @@ Page({
     //   pubkey: stringPubKey
     // }
     // this.sessionKeyRecv(JSON.stringify(test))
-    console.log('onLoad')
+    console.log(options)
+    tempId = options.tempId
     //连接服务器
-    connWebSocket.connect(this.commonRes,this.commonRej);
-    var that = this
-    wx.checkSession({
-        success:function(){
+    connWebSocket.connect(this.resolve,this.reject);
+    const that = this
+    wx.login({
+      success: function (res) {
+        if (options.name != undefined) {
+          isShared = 1
+          var friendSet = {
+            name: options.name,
+            friendID: options.friendTempID,
+            avatarUrl: options.avatarUrl,
+            gender: options.gender,
+            province: options.province,
+            city: options.city,
+            country: options.country,
+            message: [],
+            count: 0
+          }
+          var tempList = wx.getStorageSync("friendList")
+          tempList.push(friendSet)
+          wx.setStorageSync("friendList",tempList)
+        }
+        console.log(wx.getStorageSync("friendList"))
+        var dataSent = {
+          state: 1,
+          code: res.code
+        }
+        connWebSocket.setRecvCallback(that.sessionKeyRecv)
+        connWebSocket.sendMsg(dataSent, that.resolve, that.reject)
+      },
+    })
+    if (isShared != 1) {//好友不是被邀请的
+      wx.checkSession({
+        success: function () {
           console.log("you are online")
-          setTimeout(function(){
-            if(trd_recv_state){
+          setTimeout(function () {
+            if (trd_recv_state) {
               wx.switchTab({
                 url: '../friendList/friendList',
-                success: function(res){
+                success: function (res) {
                   console.log(res)
                 },
-                fail: function() {
+                fail: function () {
                   console.log("switch failed")
                 }
               })
             }
-            else{
+            else {
               wx.showToast({
-                title:"登录超时，请刷新重试",
-                duration:3000,
-                icon:"loading"
+                title: "登录超时，请刷新重试",
+                duration: 3000,
+                icon: "loading"
               })
             }
-          },3000)
+          }, 3000)
         },
-        fail:function(){
+        fail: function () {
           wx.login({
             success: function (res) {
               var dataSent = {
-                state:1,
-                code:res.code
+                state: 1,
+                code: res.code
               }
               connWebSocket.setRecvCallback(that.sessionKeyRecv)
-              connWebSocket.sendMsg(dataSent,that.commonRes,that.commonRej)
+              connWebSocket.sendMsg(dataSent, that.resolve, that.reject)
             },
           })
         }
       })
+    }
   },
-  commonRes:function(result){
+  resolve:function(result){
       console.log(result)
   },
-  commonRej:function(result){
+  reject:function(result){
       console.log(result)
   },
   sessionKeyRecv:function(res){
@@ -81,8 +112,29 @@ Page({
     wx.setStorageSync('server_public_key', recv.pubkey)
     wx.setStorageSync('seq', 0)
     trd_recv_state = 1
+    var trd = recv.reply
+    var seq = 1
+    var initData = {
+      trd : trd,
+      friendTempID:tempId,
+      seq: 1
+    }
+    wx.setStorageSync("seq",seq)
+    var dataSent = enc.sendEncData(initData, 5)
+    connWebSocket.setRecvCallback(this.updateFriendID)
+    connWebSocket.sendMsg(dataSent, this.resolve, this.reject)
+  },
+  updateFriendID:function(res){
+    var recv = JSON.parse(res)
+    if(recv.state == 5){
+      var msg = enc.aesDecrypt(recv.secret)
+    }
+    else{
+
+    }
   },
   onPullDownRefresh:function(){
+    connWebSocket.connect(that.resolve,that.reject)
     var that = this
     wx.login({
       success: function (res) {
@@ -91,7 +143,7 @@ Page({
           code:res.code
         }
         connWebSocket.setRecvCallback(that.sessionKeyRecv)
-        connWebSocket.sendMsg(dataSent,that.commonRes,that.commonRej)
+        connWebSocket.sendMsg(dataSent,that.resolve,that.reject)
         }
     })
     wx.checkSession({

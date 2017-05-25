@@ -1,6 +1,4 @@
 <!-- userInfo.wxml-->
-
-
 <view class="page" style="height:100%">
     <view class="page__bd">
         <view class="space" style="height:45rpx"></view>

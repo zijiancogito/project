@@ -23,14 +23,14 @@ module.exports = (function(){
 
     function init(){
         //监听连接打开事件和收到信息事件
-        console.log("23333")
         wx.onSocketOpen(function() {
-                isWebsocketOpen = true;
-                console.log("Sockect Open!")
-                while(msgToSend.length > 0){
-                    var msg = msgToSend.pop();
-                    sendMsg(msg);
-                }
+              console.log("连接已建立")
+              isWebsocketOpen = true;
+              console.log("Sockect Open!")
+              while(msgToSend.length > 0){
+                  var msg = msgToSend.pop();
+                  sendMsg(msg);
+              }
             })
         wx.onSocketMessage(function(data) {
             console.log("Recv msg: "+data.data)
@@ -56,9 +56,9 @@ module.exports = (function(){
               success: function(){
                   resolve(msg +" sent successfully!")
               },
-              fail: function(){
-                  console.log(msg)
-                  reject("发送消息失败，但不是网络问题")
+              fail: function(res){
+                  console.log(msg+" sent failed")
+                  reject(res)
               }
             })
         }

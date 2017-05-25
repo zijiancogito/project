@@ -12,4 +12,5 @@
         <view class="line"></view>
     </view>
     <button open-type="share">邀请好友进行秘密通信吧！</button>
+    <image src = "{{avatarUrl}}" background-size = "cover"></image>
 </scroll-view>

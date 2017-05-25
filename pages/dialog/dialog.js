@@ -89,7 +89,7 @@ Page({
         const _self = this
         var trd = wx.getStorageSync("trd_session_key")
         var dataSent = {
-                friendSecret:_self.data.friendName,//好友长期秘密存储
+                friendSecret:_self.data.friendID,//好友长期秘密
                 message:_self.data.messages[_self.data.messages.length - 1].text,
                 trd: trd
         }
@@ -111,7 +111,8 @@ Page({
     */
     var recv = JSON.parse(data)
     this.data.msgRecv = true
-    if(recv.state === 3 && recv.from == self.data.friendName){
+    var friendID = wx.getStorageSync("friendList")
+    if(recv.state === 3 && recv.from == self.data.friendID){
       //接收到的是当前会话窗口好友的在线消息
        this.setData({
           messages: [...this.data.messages, {
@@ -120,7 +121,7 @@ Page({
           }]
        })
     }
-    else if(recv.state === 3 && recv.from != self.data.friendName){
+    else if(recv.state === 3 && recv.from != self.data.friendID){
       //收到的是其他好友的在线消息
       for(var i = 0; i< tempList.length;i++){
         if(tempList[i].name == recv.from){

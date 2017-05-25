@@ -8,29 +8,46 @@ login：
 获取离线消息：
 {
   state:2,
-  trd:3rd_session(string),
-  seq:<confirm number>(int)
+  aeskeyEnc: <服务器公钥加密的用户密钥>
+  aesEncText: {
+    trd:3rd_session(string),
+    seq:<confirm number>(int)
+  }
 }
-
 发送消息：
 {
 	state:3,
-	friendSecret:<the message's destination>(string),
-	message:<message contain>(string),
-	trd:<sender's nickName>(string),
-    seq:<confirm number>(int)
+    aeskeyEnc: <服务器公钥加密的用户密钥>
+    aesEncText: {
+        friendID:<the message's destination>(string),
+        messageEnc:<message contain>(string),
+        trd:<sender's nickName>(string),
+        seq:<confirm number>(int)
+    }
 }
 
 给服务器发送临时id，用于邀请好友进行通信：
 {
 	state:4,
-	trd:3rd_session,
-	tempId:临时ID
+    aeskeyEnc: <服务器公钥加密的用户密钥>
+    aesEncText: {
+        trd:3rd_session,
+        tempId:临时ID
+    }
 }
 
+受邀请好友发送给服务器用户的临时id，开始和用户的第一次对话（即发送邀请的用户的id）：
+{
+    state:5,
+    aeskeyEnc: <服务器公钥加密的用户密钥>
+    aesEncText: {
+        trd:3rd_session,
+        friendTempId:临时ID,
+        seq:1   //对于受邀请的好友（即给服务器发送state = 5的用户），需要服务器将其seq置0
+    }
+}
 
 Part2:
-
 服务器->后台数据格式：
 注：数据都用对象存储，发送前用JSON.stringify转换
 
@@ -43,35 +60,49 @@ login：
 离线消息发送：
 {
     state:1,
-    
-    seq:<client seq + 1>(int),
+    secret:{
+        log:{<json obj>}
+        /*{
+            text: <offline text>(string),
+            from: <friendID>(string),
+            time:<send time>(string)
+        }*/
+        seq:<client seq + 1>(int),
+    }
 }
-
 离线消息发送完毕：
 {
 	state:0,
-    seq:<client seq + 1>(int)
+    secret:{
+        seq:<client seq + 1>(int)
+    }
+    
 }
-
 消息转发:
 {
 	state:3,
-	text:<message from friend>(string),
-	from:<friendName>(string)	
+    secret:{
+        text:<message from friend>(string),
+        from:<friendName>(string),
+        time:<发送消息的时间>(string)
+        seq:<seq + 1>(int)
+    }	
 }
-
-查找好友信息返回：
+服务器更新用户标识：
 {
-	state:<4 for has result and others for None>
-	info:<the info of whose phoneNumber matches the prefix of the require>(object array)
-	/*
-		object:{
-			name:(string),
-			phoneNumber:(string),
-			asume:<the asume which was filled when register>(string)
-		}
-
-	}
-	 */
+    state:4,
+    secret:{
+        friendPermanentId:<服务器返回tempId对应登录时存在服务器上的永久id>,
+        seq:<seq + 1>(int)
+    }
 }
+服务器收到用户的临时ID,返回确认信息：
+{
+    state:5,
+    secret:{
+        seq:<用户seq+1>(int)
+    }
+}
+
+
 

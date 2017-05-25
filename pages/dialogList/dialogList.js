@@ -1,5 +1,6 @@
 var promise = require("../../lib/Promise.js")
 var connSocket = require("../../function/connect.js")
+var enc = require("../../function/encAndRand.js")
 var rsaEnc = require("../../rsa/cryptico.js")
 var aesEnc = require("../../crypto/crypto-js.js")
 var app = getApp()
@@ -50,33 +51,9 @@ Page({
             seq:seq
         }
         setTimeout(function(){ 
-          self.sendAESdata(dataSent,2)
+          var data = enc.sendEncData(dataSent,2)
+          connSocket.sengMsg(data,self.resolve,self.reject)
         },1000)
-    },
-    sendAESdata: function (data2enc, state) {
-      var pwd = "123456"//用于生成aes密钥的字串，待改进
-      var textEnc = aesEnc.AES.encrypt(JSON.stringify(data2enc), pwd)
-      var aeskey = textEnc.key.toString()
-      wx.setStorage({
-        key: 'aeskey2server',
-        data: pwd,
-        success: function () {
-          console.log("set aeskey successs")
-        },
-        fail: function (res) {
-          console.log(res)
-        }
-      })
-      var aesKeyEnc = rsaEnc.cryptico.encrypt(aeskey, wx.getStorageSync("server_public_key"));
-      var textSent = textEnc.ciphertext.toString()
-      var that = this
-      var dataSent = {
-        state: state,
-        aeskeyEnc: aesKeyEnc.cipher,
-        aesEncText: textSent
-      }
-      console.log(dataSent)
-      connSocket.sendMsg(dataSent, that.resolve, that.reject)
     },
     msgHandler:function(data){
         //离线消息暂时用数组传输，视服务器方便而定
@@ -97,10 +74,28 @@ Page({
         this.data.msgRecv = true
         var tempList = wx.getStorageSync("friendList")
         if(recv.state === 1){
-            for(var i = 0;i < tempList.length;i++){
-                if(tempList[i].name == recv.from){
-                    tempList[i].count+=recv.log.length;
-                    tempList[i].message = [...tempList[i].message,...recv.log];
+            var aeskey = wx.getStorageSync("aeskey2server")
+            var secret = aesEnc.AES.decrypt(recv.secret, aeskey)
+            var secretObj = JSON.parse(secret)
+            var countLen = 0
+            for(var item in secretObj){
+              countLen++ 
+            }
+            var seq = wx.getStorageSync("seq")
+            if (seq + 1 != secretObj.seq){
+              console.log("wrong seq at recving offline msg")
+              return
+            }
+            for (var i = 0; i < countLen;i++){
+              for (var j = 0; j < tempList.length;j++)
+                if (tempList[j].friendID == secretObj.log[i].from){
+                    
+                    tempList[i].count++;
+                    msgInfo = {
+                      text: secretObj.log[i].text,
+                      time: secretObj.log[i].time
+                    }
+                    tempList[i].message = [...tempList[i].message, msgInfo];//更新msg列表（聊天记录）
                     wx.setStorageSync('friendList',tempList)
                     this.setData({
                         list:[...tempList]
@@ -110,18 +105,37 @@ Page({
             }
         }
         else if(recv.state === 0){
-            wx.showToast({
-                title:"接收离线消息完毕！",
-                icon:"success",
-                duration:3000
-            })
+          var aeskey = wx.getStorageSync("aeskey2server")
+          var secret = aesEnc.AES.decrypt(recv.secret, aeskey)
+          var secretObj = JSON.parse(secret)
+          var seq = wx.getStorageSync("seq")
+          if (secretObj.seq != seq + 1) {
+            console.log("wrong seq at finish recving offline msg")
+            return
+          }
+          wx.showToast({
+              title:"接收离线消息完毕！",
+              icon:"success",
+              duration:3000
+          })
+          seq++
+          wx.setStorageSync("seq", seq)
         }
         else if(recv.state == 3){
             //接收到在线消息
+            var aeskey = wx.getStorageSync("aeskey2server")
+            var secret = aesEnc.AES.decrypt(recv.secret, aeskey)
+            var secretObj = JSON.parse(secret)
+            var seq = wx.getStorageSync("seq")
+            if (secretObj.seq != seq + 1){
+              console.log("wrong seq at recving online msg")
+              return
+            }
             for(var i = 0;i<tempList.length;i++){
-                if(tempList[i].name == recv.from){
+              if (tempList[i].friendID == secretObj.from){
                     var tempData = {
-                        text:recv.text,
+                        text: secretObj.text,
+                        time: secretObj.time,
                         from:"recv"
                     }
                     tempList[i].count++;
@@ -133,6 +147,8 @@ Page({
                     break;
                 }
             }
+            seq++
+            wx.setStorageSync("seq",seq)
         }
         else{
             console.log("离线消息接收时出现意外state")

@@ -1,18 +1,24 @@
 // pages/friendList/friendList.j
 var conn = require("../../function/connect.js")
-var rsaEnc = require("../../rsa/cryptico.js")
+var enc = require("../../function/encAndRand.js")
 var aesEnc = require("../../crypto/crypto-js.js")
 var app = getApp()
 var name = ""
 var tempId = ""
 var hashedId = ""
-
+var avatarUrl = ""
+var province = ""
+var city = ""
+var country = ""
+var gender = ""
 Page({
   data:{
     temp :[],
+    avatarUrl: "https://ss0.bdstatic.com/70cFvHSh_Q1YnxGkpoWK1HF6hhy/it/u=1188647240,165150850&fm=117&gp=0.jpg"//测试url
   },
   onLoad:function(options){
     const self = this
+    conn.connect(this.commonRes, this.commonRej)
     this.setData({
       temp:wx.getStorageSync('friendList')
     })
@@ -22,8 +28,12 @@ Page({
     wx.getUserInfo({
       success: function (res) {
         var userInfo = res.userInfo
-        console.log(userInfo.nickName)
         self.name = userInfo.nickName
+        self.avatarUrl = userInfo.avatarUrl
+        self.gender = userInfo.gender
+        self.province = userInfo.province
+        self.city = userInfo.city
+        self.country = userInfo.country
         var promise = new Promise(function (resolve, reject) {
           if (self.name != undefined) {
             resolve("get name success");
@@ -33,10 +43,7 @@ Page({
         });
         promise.then(function (value) {
           console.log(value)
-          var range = 1000000000
-          var time = new Date().getTime()
-          var seed = (time * 9301 + 49297) % 233280
-          var rand = Math.ceil(seed / (233280.0) * range)
+          var rand = enc.random()
           self.tempId = rand + self.name
           self.hashedId = aesEnc.MD5(self.tempId).toString()
         }, function (value) {
@@ -64,17 +71,17 @@ Page({
     var that = this
     return {
       title: '邀请好友进行秘密通信',
-      path: '/page/share?name=' + name + "?id=" + hashedId,
+      path: '/page/share/share?name=' + name + "&tempId=" + hashedId+"&avatarUrl="+avatarUrl+"&province="+province+"&city="+city+"&country="+country+"&gender"+gender,
       success: function (res) {
         console.log("share success")
-        conn.connect(that.commonRes,that.commonRej)
         conn.setRecvCallback(that.recvConfirm)
         var trd = wx.getStorageSync("trd_session_key")
         var dataSent = {
           tempId:hashedId,
           trd:trd
         }
-        that.sendAESdata(dataSent,4)
+        var data = enc.sendEncData(dataSent,4)
+        conn.sendMsg(data, that.commonRes, that.commonRej)
       },
       fail: function (res) {
         console.log("share failed")
@@ -88,35 +95,15 @@ Page({
     console.log(res)
   },
   recvConfirm:function(res){
-    var seqRecv = res.reply
+    var recv = JSON.parse(res)
+    var msg = enc.aesDecrypt(recv.secret)
+    var seqRecv = msg.seq
     var seq = wx.getStorageSync("seq")
     if(seqRecv == seq+1){
       wx.setStorageSync("seq",seq + 2)
     }
-  },
-  sendAESdata: function (data2enc,state){
-    var pwd = "123456"//用于生成aes密钥的字串，待改进
-    var textEnc = aesEnc.AES.encrypt(JSON.stringify(data2enc), pwd)
-    var aeskey = textEnc.key.toString()
-    wx.setStorage({
-      key: 'aeskey2server',
-      data: pwd,
-      success: function () {
-        console.log("set aeskey successs")
-      },
-      fail: function (res) {
-        console.log(res)
-      }
-    })
-    var aesKeyEnc = rsaEnc.cryptico.encrypt(aeskey, wx.getStorageSync("server_public_key"));
-    var textSent = textEnc.ciphertext.toString()
-    var that = this
-    var dataSent = {
-      state: state,
-      aeskeyEnc: aesKeyEnc.cipher,
-      aesEncText: textSent
+    else{
+      console.log("seq wrong at page friendList")
     }
-    console.log(dataSent)
-    conn.sendMsg(dataSent, that.commonRes, that.commonRej)
   },
-})
+ })
