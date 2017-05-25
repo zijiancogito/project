@@ -59,7 +59,7 @@ Page({
         connWebSocket.sendMsg(dataSent, that.resolve, that.reject)
       },
     })
-    if (isShared != 1) {//好友不是被邀请的
+    if (isShared != 1) {//用户不是被邀请的
       wx.checkSession({
         success: function () {
           console.log("you are online")
@@ -128,9 +128,17 @@ Page({
     var recv = JSON.parse(res)
     if(recv.state == 5){
       var msg = enc.aesDecrypt(recv.secret)
+      var seq = wx.getStorageSync("seq")
+      if(seq +1  == msg.seq){
+        var tempList = wx.getStorageSync("friendList")
+        tempList[tempList.length - 1].friendId = msg.friendPermanentId
+        wx.setStorageSync("friendList",tempList)
+        wx.setStorageSync("seq", seq + 2)
+      }
+      console.log("seq wrong at login/updateFriendID")
     }
     else{
-
+      console.log("state wrong at login/updateFriendID")
     }
   },
   onPullDownRefresh:function(){
