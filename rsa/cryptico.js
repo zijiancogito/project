@@ -2650,7 +2650,7 @@ function RSASetPublic(N, E)
         this.n = parseBigInt(N, 16);
         this.e = parseInt(E, 16);
     }
-    else alert("Invalid RSA public key");
+    else console.log("Invalid RSA public key");
 }
 
 // Perform raw public operation on "x": return x^e (mod n)
@@ -3426,8 +3426,11 @@ var cryptico = (function() {
     
     my.publicKeyFromString = function(string)
     {
-        var N = my.b64to16(string.split("|")[0]);
-        var E = "03";
+        var tokens = string.split("|");
+        var N = tokens[0];
+        //var N = my.b64to16(string.split("|")[0]);
+        //var E = "03";
+        var E = tokens.length > 1 ? tokens[1] : "03";
         var rsa = new RSAKey();
         rsa.setPublic(N, E);
         return rsa
@@ -3436,11 +3439,12 @@ var cryptico = (function() {
     my.encrypt = function(plaintext, publickeystring, signingkey)
     {
         var cipherblock = "";
-        var aeskey = my.generateAESKey();
+        //var aeskey = my.generateAESKey();
         try
         {
             var publickey = my.publicKeyFromString(publickeystring);
-            cipherblock += my.b16to64(publickey.encrypt(my.bytes2string(aeskey))) + "?";
+            //cipherblock += my.b16to64(publickey.encrypt(my.bytes2string(aeskey))) + "?";
+            cipherblock += cryptico.b16to64(publickey.encrypt(plaintext))
         }
         catch(err)
         {
@@ -3455,7 +3459,7 @@ var cryptico = (function() {
             plaintext += "::52cee64bb3a38f6403386519a39ac91c::";
             plaintext += signString;
         }
-        cipherblock += my.encryptAESCBC(plaintext, aeskey);    
+        //cipherblock += my.encryptAESCBC(plaintext, aeskey);    
         return {status: "success", cipher: cipherblock};
     }
 

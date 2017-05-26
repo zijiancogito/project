@@ -9,7 +9,8 @@
     "pages/friendList/friendList",
     "pages/QRCode/QRCode",
     "pages/scanQRCode/scanQRCode",
-    "pages/gestureCode/gestureCode"
+    "pages/gestureCode/gestureCode",
+    "pages/share/share"
   ],
   "window":{
     "backgroundTextStyle":"light",

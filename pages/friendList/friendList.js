@@ -1,80 +1,55 @@
-// pages/friendList/friendList.js
+// pages/friendList/friendList.j
+var conn = require("../../function/connect.js")
+var enc = require("../../function/encAndRand.js")
+var aesEnc = require("../../crypto/crypto-js.js")
+var app = getApp()
+var name = ""
+var tempId = ""
+var hashedId = ""
+var avatarUrl = ""
+var province = ""
+var city = ""
+var country = ""
+var gender = ""
 Page({
   data: {
-    inputShowed: false,
-    inputVal: "",
-    useName: "",
-    res: [],
-    temp: []
-  },
-  onLoad: function () {
-    const self = this
-    conn.connect(this.resolve, this.reject);
-    conn.setRecvCallback(this.msgHandler);
-    app.getUserInfo(function (userInfo) {
-      self.setData({
-        userName: userInfo.nickName
-      })
-    })
-  },
-  showInput: function () {
-    this.setData({
-      inputShowed: true
-    });
-  },
-  hideInput: function () {
-    this.setData({
-      inputVal: "",
-      inputShowed: false
-    });
-  },
-  clearInput: function () {
-    this.setData({
-      inputVal: ""
-    });
-  },
-  inputTyping: function (e) {
-    this.setData({
-      inputVal: e.detail.value
-    });
-    var dataSent = {
-      state: 4,
-      search: e.detail.value,
-      requirer: this.data.userName
-    }
-    conn.sendMsg(dataSent, this.resolve, this.reject)
-  },
-  searchFriend: function () {
-    this.gopage("../friendInfo(simple)/friendInfo(simple)")
-  },
-  gopage: function (url) {
-    wx.navigateTo({
-      url: url,
-      success: function (res) {
-        console.log("navigate to " + url)
-      },
-      fail: function () {
-        console.log("navigate failed")
-      },
-    })
-  },
-  resolve: function (data) {
-    console.log(data)
-  },
-  reject: function (data) {
-    console.log(data)
-  },
-  msgHandler: function (parma) {
-    var recv = JSON.parse(parma);
-    if (recv.state == 4) {
-      this.setData({
-        res: recv.info
-      })
-    }
+    temp: [],
+    avatarUrl: "https://ss0.bdstatic.com/70cFvHSh_Q1YnxGkpoWK1HF6hhy/it/u=1188647240,165150850&fm=117&gp=0.jpg"//测试url
   },
   onLoad: function (options) {
+    const self = this
+    conn.connect(this.commonRes, this.commonRej)
     this.setData({
       temp: wx.getStorageSync('friendList')
+    })
+    wx.showShareMenu({
+      withShareTicket: true
+    })
+    wx.getUserInfo({
+      success: function (res) {
+        var userInfo = res.userInfo
+        self.name = userInfo.nickName
+        self.avatarUrl = userInfo.avatarUrl
+        self.gender = userInfo.gender
+        self.province = userInfo.province
+        self.city = userInfo.city
+        self.country = userInfo.country
+        var promise = new Promise(function (resolve, reject) {
+          if (self.name != undefined) {
+            resolve("get name success");
+          } else {
+            reject("get name failed");
+          }
+        });
+        promise.then(function (value) {
+          console.log(value)
+          var rand = enc.random()
+          self.tempId = rand + self.name
+          self.hashedId = aesEnc.MD5(self.tempId).toString()
+        }, function (value) {
+          console.log(value)
+        });
+      }
     })
   },
   onReady: function () {
@@ -91,5 +66,44 @@ Page({
   },
   friendInfo: function () {
     this.gopage("../friendInfo(detail)/friendInfo(detail)")
+  },
+  onShareAppMessage: function () {
+    var that = this
+    return {
+      title: '邀请好友进行秘密通信',
+      path: '/page/share/share?name=' + name + "&tempId=" + hashedId + "&avatarUrl=" + avatarUrl + "&province=" + province + "&city=" + city + "&country=" + country + "&gender" + gender,
+      success: function (res) {
+        console.log("share success")
+        conn.setRecvCallback(that.recvConfirm)
+        var trd = wx.getStorageSync("trd_session_key")
+        var dataSent = {
+          tempId: hashedId,
+          trd: trd
+        }
+        var data = enc.sendEncData(dataSent, 4)
+        conn.sendMsg(data, that.commonRes, that.commonRej)
+      },
+      fail: function (res) {
+        console.log("share failed")
+      }
+    }
+  },
+  commonRes: function (res) {
+    console.log(res)
+  },
+  commonRej: function (res) {
+    console.log(res)
+  },
+  recvConfirm: function (res) {
+    var recv = JSON.parse(res)
+    var msg = enc.aesDecrypt(recv.secret)
+    var seqRecv = msg.seq
+    var seq = wx.getStorageSync("seq")
+    if (seqRecv == seq + 1) {
+      wx.setStorageSync("seq", seq + 2)
+    }
+    else {
+      console.log("seq wrong at page friendList")
+    }
   },
 })

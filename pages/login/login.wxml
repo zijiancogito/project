@@ -5,8 +5,8 @@
 
 <view class="page">
     <view  bindtap="bindViewTap" class="userinfo">
-      <text class="userinfo-nickname">{{userInfo.nickName}}</text>
-    </view>
+    <text class="userinfo-nickname">{{userInfo.nickName}}</text>
+  </view>
     <view class="page__hd">
         <view class="page__title">你好</view>
         <view class="page__desc">正在努力为您的安全聊天做准备，请稍后...</view>

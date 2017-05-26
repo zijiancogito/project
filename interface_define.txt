@@ -1,39 +1,31 @@
 Part1:
 后台->服务器数据格式定义：
-register:
-{
-	state:0,
-	name:<nickName>(string),
-	phone:<phoneNumber>(string),
-	psw:<password>(string)
-}
 login：
 {
-	state:1,
-	acc:<account>(string),
-	psw:<password>(string)
+    state:1,
+    code:res.code(string)
 }
-
 获取离线消息：
 {
-	state:2,
-	myName:<userNickName>(string),
-	friendName:<friendNameOnMyList>(string)
+  state:2,
+  trd:3rd_session(string),
+  seq:<confirm number>(int)
 }
 
 发送消息：
 {
 	state:3,
-	targetName:<the message's destination>(string),
+	friendSecret:<the message's destination>(string),
 	message:<message contain>(string),
-	name:<sender's nickName>(string)
+	trd:<sender's nickName>(string),
+    seq:<confirm number>(int)
 }
 
-查找好友：
+给服务器发送临时id，用于邀请好友进行通信：
 {
 	state:4,
-	search:<phoneNumber>(string),
-	requirer:<user who send this require>
+	trd:3rd_session,
+	tempId:临时ID
 }
 
 
@@ -43,29 +35,22 @@ Part2:
 注：数据都用对象存储，发送前用JSON.stringify转换
 
 login：
-登录成功返回"success"
-
-register:
-若成功则返回"success"；
-若有其它状态，佳斌可以在这里更新接口
-
+登录成功返回:
+{
+    reply:<3rd>(string),
+    pubkey:<server public rsa key>(string)
+}
 离线消息发送：
 {
     state:1,
- 	log:[<object array>],
- 	from:<who send this message>
- 	/*
- 	 object format:
- 	 {
- 	 	text:<message contain>,
- 	 	from:"recv"
- 	 }
- 	*/
+    
+    seq:<client seq + 1>(int),
 }
 
 离线消息发送完毕：
 {
-	state:0
+	state:0,
+    seq:<client seq + 1>(int)
 }
 
 消息转发:
@@ -89,4 +74,3 @@ register:
 	}
 	 */
 }
-
