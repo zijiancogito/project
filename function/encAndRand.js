@@ -7,13 +7,30 @@ function random(){
   var rand = Math.ceil(seed / (233280.0) * range)
   return rand
 }
+//十六进制字符串转字节数组  
 
+function Str2Bytes(str) {
+  var pos = 0;
+  var len = str.length;
+  if (len % 2 != 0) {
+    return null;
+  }
+  len /= 2;
+  var hexA = new Array();
+  for (var i = 0; i < len; i++) {
+    var s = str.substr(pos, 2);
+    var v = parseInt(s, 16);
+    hexA.push(v);
+    pos += 2;
+  }
+  return hexA;
+}  
 function sendEncData(data2enc, state) {
   var pwd = random().toString()//用于生成aes密钥的字串，待改进
   var textEnc = aesEnc.AES.encrypt(JSON.stringify(data2enc), pwd)
   var aeskey = textEnc.key.toString()
   var aesiv = textEnc.iv.toString()
-  console.log(aeskey)
+  console.log("enc aes key="+pwd)
   wx.setStorage({
     key: 'aeskey2server',
     data: pwd,
@@ -36,10 +53,23 @@ function sendEncData(data2enc, state) {
 }
 
 function aesDecrypt(secret){
-  var aesKey = wx.getStorageSync("aeskey2server")
-  var res = aesEnc.AES.decrypt(secret,aesKey)
-  console.log(res.toString())
-  return JSON.parse(res)
+  //test
+  var s = {'log':[], 'seq':0}
+  var st = JSON.stringify(s)
+   var aesKey = wx.getStorageSync("aeskey2server")
+  console.log("dec aes key="+aesKey)
+  var ciphertext1 = aesEnc.AES.encrypt(st, aesKey);
+  console.log(ciphertext1) 
+  console.log(ciphertext1.toString())
+  var bytes = aesEnc.AES.decrypt(ciphertext1.toString(), aesKey);
+   var plaintext1 = bytes.toString(aesEnc.enc.Utf8);
+   console.log(plaintext1.length)
+
+   var ciphertext = aesEnc.AES.decrypt(secret,aesKey)
+   console.log(ciphertext)
+   var plaintext = ciphertext.toString(aesEnc.enc.Utf8);
+   console.log(plaintext.length)
+   return JSON.parse(plaintext)
 }
 
 module.exports={

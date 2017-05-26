@@ -73,7 +73,6 @@ Page({
         this.data.msgRecv = true
         var tempList = wx.getStorageSync("friendList")
         if(recv.state === 1){
-          console.log(recv)
             var secretObj = enc.aesDecrypt(recv.secret)
             var countLen = 0
             for(var item in secretObj.log){
