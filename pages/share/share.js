@@ -8,7 +8,7 @@ var gender = ""
 Page({
   onLoad:function(option){
     const self = this
-    var name = option.nickname
+    var name = option.name
     var tempId = option.tempId
     var avatarUrl = option.avatarUrl
     var province = option.province

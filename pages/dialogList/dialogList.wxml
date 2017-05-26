@@ -7,8 +7,8 @@
                 <view class="weui-cell__bd">
                     <view style="display: inline-block; vertical-align: middle">
                         <block wx:for="{{list}}">
-                            <navigator url="../dialog/dialog?name={{item.name}}" hover-class="navigator-hover">
-                                <image src="{{item.avatar}}" class="pic"></image>
+                            <navigator url="../dialog/dialog?name={{item.name}}&friendId={{item.friendId}}" hover-class="navigator-hover">
+                                <image src="{{item.avatarUrl}}" class="pic"></image>
                                 <view class="right">
                                     <text class="title">{{item.name}}</text>
                                 </view>

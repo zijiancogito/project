@@ -19,12 +19,14 @@ Page({
   onLoad:function(options){
     const self = this
     conn.connect(this.commonRes, this.commonRej)
+    console.log("notic !")
+    console.log("the friend list is "+wx.getStorageSync('friendList'))
     this.setData({
       temp:wx.getStorageSync('friendList')
     })
-    wx.showShareMenu({
-      withShareTicket:true
-    })
+    // wx.showShareMenu({
+    //   withShareTicket:true
+    // })
     wx.getUserInfo({
       success: function (res) {
         var userInfo = res.userInfo
@@ -71,13 +73,14 @@ Page({
     var that = this
     return {
       title: '邀请好友进行秘密通信',
-      path: '/page/share/share?name=' + name + "&tempId=" + hashedId+"&avatarUrl="+avatarUrl+"&province="+province+"&city="+city+"&country="+country+"&gender"+gender,
+      path: '/page/share/share?name=' + that.name + "&tempId=" + that.hashedId + "&avatarUrl=" + that.avatarUrl + "&province=" + that.province + "&city=" + that.city + "&country=" + that.country + "&gender" + that.gender,
       success: function (res) {
         console.log("share success")
         conn.setRecvCallback(that.recvConfirm)
         var trd = wx.getStorageSync("trd_session_key")
+        console.log(that.hashedId)
         var dataSent = {
-          tempId:hashedId,
+          tempId:that.hashedId,
           trd:trd
         }
         var data = enc.sendEncData(dataSent,4)

@@ -12,20 +12,22 @@ App({
     wx.setStorageSync('friendList', friendList)
     var initFriend = [            
             {
-                avatar:"../../image/cao.png",
+                avatarUrl:"../../image/cao.png",
                 name:"曹颖",
-                asume:"1232",
-                contact:"12321312",
                 message:[{text:"23333",from : "sent"}],
-                count:0//未读消息数
+                count:0,//未读消息数,
+                country:"中国",
+                city:"?",
+                province:"山西",
             },
             {
-                avatar:"../../image/chen.png",
-                name:"高德",
-                asume:"",
-                contact:"",
-                message:[],
-                count:0
+              avatarUrl: "../../image/cao.png",
+              name: "高德",
+              message: [{ text: "233", from: "sent" }],
+              count: 0,//未读消息数,
+              country: "中国",
+              city: "安庆",
+              province: "安徽",
             },]
     wx.setStorageSync('friendList', initFriend)
   },

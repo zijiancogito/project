@@ -4,7 +4,7 @@
         <view wx:for="{{temp}}" class="weui-cells weui-cells_after-title">
             <navigator url="../friendInfo(detail)/friendInfo(detail)?name={{item.name}}" class="weui-cell weui-cell_access" hover-class="weui-cell_active"  style="height:100rpx">
                 <view  class="weui-cell__hd">
-                    <image src="{{item.avatar}}" style="margin-right: 5px;vertical-align: middle;width:80rpx; height: 80rpx;"></image>
+                    <image src="{{item.avatarUrl}}" style="margin-right: 5px;vertical-align: middle;width:80rpx; height: 80rpx;"></image>
                 </view>
                 <view class="weui-cell__bd">{{item.name}}</view>
             </navigator>
@@ -12,5 +12,5 @@
         <view class="line"></view>
     </view>
     <button open-type="share">邀请好友进行秘密通信吧！</button>
-    <image src = "{{avatarUrl}}" background-size = "cover"></image>
+     <navigator url="../share/share?name='江家伟'&tempId=2&avatarUrl='https://ss0.bdstatic.com/70cFvHSh_Q1YnxGkpoWK1HF6hhy/it/u=1188647240,165150850&fm=117&gp=0.jpg'&province='福建'&city='建瓯'&country='中国'&gender=1" class="weui-cell weui-cell_access" hover-class="weui-cell_active"  style="height:100rpx"><button class="weui-cell__bd">jump</button></navigator>
 </scroll-view>

@@ -16,16 +16,6 @@ Page({
     this.data.loginInfo[e.currentTarget.id] = e.detail.value
   },
   onLoad: function (options) {
-    //test data
-    // var phrase = "1234"
-    // var pubkey = rsaEnc.cryptico.generateRSAKey(phrase,2048)
-    // var stringPubKey = rsaEnc.cryptico.publicKeyString(pubkey)
-    // wx.setStorageSync("server_public_key", stringPubKey)
-    // var test = {
-    //   reply : 1234,
-    //   pubkey: stringPubKey
-    // }
-    // this.sessionKeyRecv(JSON.stringify(test))
     console.log(options)
     tempId = options.tempId
     //连接服务器
@@ -57,47 +47,51 @@ Page({
         }
         connWebSocket.setRecvCallback(that.sessionKeyRecv)
         connWebSocket.sendMsg(dataSent, that.resolve, that.reject)
-      },
-    })
-    if (isShared != 1) {//用户不是被邀请的
-      wx.checkSession({
-        success: function () {
-          console.log("you are online")
-          setTimeout(function () {
-            if (trd_recv_state) {
-              wx.switchTab({
-                url: '../friendList/friendList',
-                success: function (res) {
-                  console.log(res)
-                },
-                fail: function () {
-                  console.log("switch failed")
+        if (isShared != 1) {//用户不是被邀请的
+          console.log("非邀请用户")
+          wx.checkSession({
+            success: function () {
+              console.log("check session success")
+              setTimeout(function () {
+                if (trd_recv_state) {
+                  wx.switchTab({
+                    url: '../friendList/friendList',
+                    success: function (res) {
+                      console.log(res)
+                    },
+                    fail: function () {
+                      console.log("switch failed")
+                    }
+                  })
                 }
-              })
-            }
-            else {
-              wx.showToast({
-                title: "登录超时，请刷新重试",
-                duration: 3000,
-                icon: "loading"
-              })
-            }
-          }, 3000)
-        },
-        fail: function () {
-          wx.login({
-            success: function (res) {
-              var dataSent = {
-                state: 1,
-                code: res.code
-              }
-              connWebSocket.setRecvCallback(that.sessionKeyRecv)
-              connWebSocket.sendMsg(dataSent, that.resolve, that.reject)
+                else {
+                  wx.showToast({
+                    title: "登录超时，请刷新重试",
+                    duration: 3000,
+                    icon: "loading"
+                  })
+                }
+              }, 3000)
             },
+            fail: function () {
+              wx.login({
+                success: function (res) {
+                  var dataSent = {
+                    state: 1,
+                    code: res.code
+                  }
+                  connWebSocket.setRecvCallback(that.sessionKeyRecv)
+                  connWebSocket.sendMsg(dataSent, that.resolve, that.reject)
+                },
+              })
+            }
           })
         }
-      })
-    }
+      },
+      fail:function(){
+        console.log("login failed")
+      }
+    })
   },
   resolve:function(result){
       console.log(result)
@@ -112,17 +106,19 @@ Page({
     wx.setStorageSync('server_public_key', recv.pubkey)
     wx.setStorageSync('seq', 0)
     trd_recv_state = 1
-    var trd = recv.reply
-    var seq = 1
-    var initData = {
-      trd : trd,
-      friendTempID:tempId,
-      seq: 1
+    if(isShared==1){
+      var trd = recv.reply
+      var seq = 1
+      var initData = {
+        trd: trd,
+        friendTempID: tempId,
+        seq: 1
+      }
+      wx.setStorageSync("seq", seq)
+      var dataSent = enc.sendEncData(initData, 5)
+      connWebSocket.setRecvCallback(this.updateFriendID)
+      connWebSocket.sendMsg(dataSent, this.resolve, this.reject)
     }
-    wx.setStorageSync("seq",seq)
-    var dataSent = enc.sendEncData(initData, 5)
-    connWebSocket.setRecvCallback(this.updateFriendID)
-    connWebSocket.sendMsg(dataSent, this.resolve, this.reject)
   },
   updateFriendID:function(res){
     var recv = JSON.parse(res)
@@ -134,6 +130,15 @@ Page({
         tempList[tempList.length - 1].friendId = msg.friendPermanentId
         wx.setStorageSync("friendList",tempList)
         wx.setStorageSync("seq", seq + 2)
+        wx.switchTab({
+          url: '../friendList/friendList',
+          success:function(){
+            console.log("switch1 success")
+          },
+          fail:function(){
+            console.log("switch1 failed")
+          }
+        })
       }
       console.log("seq wrong at login/updateFriendID")
     }
@@ -142,8 +147,13 @@ Page({
     }
   },
   onPullDownRefresh:function(){
-    connWebSocket.connect(that.resolve,that.reject)
-    var that = this
+    wx.showToast({
+      title: '刷新中',
+      icon:"loading",
+      duration:3000
+    })
+    //connWebSocket.connect(this.resolve,this.reject)
+    const that = this
     wx.login({
       success: function (res) {
         var dataSent = {

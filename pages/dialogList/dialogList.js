@@ -12,6 +12,7 @@ Page({
         const self = this
         var fl = wx.getStorageSync('friendList')
         var tempList = []
+        connSocket.connect(this.resolve,this.reject)
         app.getUserInfo(function(userInfo){
         //更新数据
             self.setData({
@@ -40,7 +41,7 @@ Page({
                 })
             }
         },4000);
-        connSocket.connect(self.resolve,self.reject)
+        
         connSocket.setRecvCallback(self.msgHandler)
         var trd = wx.getStorageSync("trd_session_key")
         var seq = wx.getStorageSync("seq")
@@ -72,6 +73,7 @@ Page({
         this.data.msgRecv = true
         var tempList = wx.getStorageSync("friendList")
         if(recv.state === 1){
+          console.log(recv)
             var secretObj = enc.aesDecrypt(recv.secret)
             var countLen = 0
             for(var item in secretObj.log){
