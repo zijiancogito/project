@@ -19,15 +19,17 @@ App({
                 country:"中国",
                 city:"?",
                 province:"山西",
+                friendId:""
             },
             {
-              avatarUrl: "../../image/cao.png",
+              avatarUrl: "../../image/chen.png",
               name: "高德",
               message: [{ text: "233", from: "sent" }],
               count: 0,//未读消息数,
               country: "中国",
               city: "安庆",
               province: "安徽",
+              friendId: ""
             },]
     wx.setStorageSync('friendList', initFriend)
   },

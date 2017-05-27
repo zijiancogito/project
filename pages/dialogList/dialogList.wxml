@@ -15,8 +15,9 @@
                             </navigator>
                         </block>
                     </view>
-                    <view class="weui-badge" style="margin-left: 5px;">New</view>
+                    <button style="margin-left: 5px;" class="weui-badge" open-type="share">邀请好友进行秘密通信吧！</button>
                 </view>
+                 <navigator url="../share/share?name='江家伟'&tempId=2&avatarUrl='https://ss0.bdstatic.com/70cFvHSh_Q1YnxGkpoWK1HF6hhy/it/u=1188647240,165150850&fm=117&gp=0.jpg'&province='福建'&city='建瓯'&country='中国'&gender=1" class="weui-cell weui-cell_access" hover-class="weui-cell_active"  style="height:100rpx"><button class="weui-cell__bd">jump</button></navigator>
                 <view class="weui-cell__ft weui-cell__ft_in-access"></view>
             </view>
         </view>

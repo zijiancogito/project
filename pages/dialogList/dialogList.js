@@ -1,6 +1,14 @@
 var promise = require("../../lib/Promise.js")
 var connSocket = require("../../function/connect.js")
 var enc = require("../../function/encAndRand.js")
+var name = ""
+var tempId = ""
+var hashedId = ""
+var avatarUrl = ""
+var province = ""
+var city = ""
+var country = ""
+var gender = ""
 var app = getApp()
 Page({
     data:{
@@ -27,6 +35,32 @@ Page({
         this.setData({
             list:tempList
         })
+        wx.getUserInfo({
+          success: function (res) {
+            var userInfo = res.userInfo
+            self.name = userInfo.nickName
+            self.avatarUrl = userInfo.avatarUrl
+            self.gender = userInfo.gender
+            self.province = userInfo.province
+            self.city = userInfo.city
+            self.country = userInfo.country
+            var promise = new Promise(function (resolve, reject) {
+              if (self.name != undefined) {
+                resolve("get name success");
+              } else {
+                reject("get name failed");
+              }
+            });
+            promise.then(function (value) {
+              console.log(value)
+              var rand = enc.random()
+              self.tempId = rand + self.name
+              self.hashedId = aesEnc.MD5(self.tempId).toString()
+            }, function (value) {
+              console.log(value)
+            });
+          }
+        }) 
         wx.showToast({
             title:"正在从服务器加载离线消息",
             icon:"loading",
@@ -145,7 +179,40 @@ Page({
             console.log("离线消息接收时出现意外state")
         }
     },
-
+    onShareAppMessage: function () {
+      var that = this
+      return {
+        title: '邀请好友进行秘密通信',
+        path: '/page/share/share?name=' + that.name + "&tempId=" + that.hashedId + "&avatarUrl=" + that.avatarUrl + "&province=" + that.province + "&city=" + that.city + "&country=" + that.country + "&gender" + that.gender,
+        success: function (res) {
+          console.log("share success")
+          conn.setRecvCallback(that.recvConfirm)
+          var trd = wx.getStorageSync("trd_session_key")
+          console.log("temp id is : "+that.hashedId)
+          var dataSent = {
+            tempId: that.hashedId,
+            trd: trd
+          }
+          var data = enc.sendEncData(dataSent, 4)
+          conn.sendMsg(data, that.resolve, that.reject)
+        },
+        fail: function (res) {
+          console.log("share failed")
+        }
+      }
+    },
+    recvConfirm: function (res) {
+      var recv = JSON.parse(res)
+      var msg = enc.aesDecrypt(recv.secret)
+      var seqRecv = msg.seq
+      var seq = wx.getStorageSync("seq")
+      if (seqRecv == seq + 1) {
+        wx.setStorageSync("seq", seq + 2)
+      }
+      else {
+        console.log("seq wrong at page friendList")
+      }
+    },
     gopage:function(url){
         wx.navigateTo({
             url: url,

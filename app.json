@@ -7,7 +7,6 @@
     "pages/userInfo/userInfo",
     "pages/dialog/dialog",
     "pages/dialogList/dialogList",
-    "pages/friendList/friendList",
     "pages/QRCode/QRCode",
     "pages/scanQRCode/scanQRCode",
     "pages/gestureCode/gestureCode",
@@ -37,12 +36,6 @@
       "text": "会话",
       "iconPath": "image/chat.png",
       "selectedIconPath": "image/chat.png"
-    },
-    {
-      "pagePath": "pages/friendList/friendList",
-      "text": "好友",
-      "iconPath": "image/friend.png",
-      "selectedIconPath": "image/friend.png"
     }]
   }
 }

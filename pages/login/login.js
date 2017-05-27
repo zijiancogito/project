@@ -55,7 +55,7 @@ Page({
               setTimeout(function () {
                 if (trd_recv_state) {
                   wx.switchTab({
-                    url: '../friendList/friendList',
+                    url: '../dialogList/dialogList',
                     success: function (res) {
                       console.log(res)
                     },

@@ -23,3 +23,16 @@
 .space{
   background-color: #fff;
 }
+.weui-progress{
+    margin-bottom: 24px;
+}
+
+.page__title{
+  text-align: center;
+  font-size: 20;
+  padding: 0 rpx;
+}
+
+.page__desc{
+  text-align: center;
+}

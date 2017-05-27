@@ -1,15 +1,15 @@
 <!--index.wxml-->
+
 <view class="container">
+
+
 <view class="page">
-  <view  bindtap="bindViewTap" class="userinfo">
-    <image class="userinfo-avatar" src="../../image/logo.png" background-size="cover"></image>
+    <view  bindtap="bindViewTap" class="userinfo">
     <text class="userinfo-nickname">{{userInfo.nickName}}</text>
   </view>
- 
-    <view class="page__bd page__bd_spacing">
-      Welcome To Secert Messaging!
-      Login...
+    <view class="page__hd">
+        <view class="page__title">欢迎使用安全聊天</view>
     </view>
-    <image class="userinfo-avatar" src="../../image/login_wait.gif" background-size="cover"></image>
-  </view>
+    <image src="../../image/processbar.gif"/>
+</view>
 </view>
