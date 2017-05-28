@@ -5,3 +5,20 @@
 .space{
     background-color: #F8F8F8;
 }
+
+.item-avatar-sm{
+  display: flex;
+  padding: 20rpx 30rpx;
+  border-bottom: 1rpx solid #eee;
+  cursor: pointer;
+  position:relative;
+}
+
+.padding_half{
+  padding: 10rpx;
+}
+
+.title{
+  font-family: "微软雅黑";
+  font-size: 32rpx;
+}

@@ -6,7 +6,7 @@ var Promise = require("../../lib/Promise.js")
 var app = getApp()
 var scan = '../scanQRCode/scanQRCode'
 var code = '../QRCode/QRCode'
-var tempId = ""
+var InvitedCode = ""
 var trd_recv_state = 0
 var isShared = 0
 Page({
@@ -17,7 +17,7 @@ Page({
   },
   onLoad: function (options) {
     console.log(options)
-    tempId = options.tempId
+    InvitedCode = options.InvitedCode
     //连接服务器
     connWebSocket.connect(this.resolve,this.reject);
     const that = this
@@ -33,6 +33,7 @@ Page({
             province: options.province,
             city: options.city,
             country: options.country,
+            inviteCode:"",
             message: [],
             count: 0
           }
@@ -104,6 +105,7 @@ Page({
     console.log(recv.reply)
     wx.setStorageSync('trd_session_key', recv.reply)
     wx.setStorageSync('server_public_key', recv.pubkey)
+    wx.setStorageSync("uniqueId",recv.id)
     wx.setStorageSync('seq', 0)
     trd_recv_state = 1
     if(isShared==1){
@@ -111,7 +113,7 @@ Page({
       var seq = 1
       var initData = {
         trd: trd,
-        friendTempID: tempId,
+        InvitedCode: InvitedCode,
         seq: 1
       }
       wx.setStorageSync("seq", seq)
@@ -131,7 +133,7 @@ Page({
         wx.setStorageSync("friendList",tempList)
         wx.setStorageSync("seq", seq + 2)
         wx.switchTab({
-          url: '../friendList/friendList',
+          url: '../dialogList/dialogList',
           success:function(){
             console.log("switch1 success")
           },
@@ -171,7 +173,7 @@ Page({
             if(trd_recv_state){
               wx.stopPullDownRefresh()
               wx.switchTab({
-                url: '../friendList/friendList',
+                url: '../dialogList/dialogList',
                 success: function(res){
                   console.log(res)
                 },

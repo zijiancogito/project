@@ -30,7 +30,6 @@ function sendEncData(data2enc, state) {
   var textEnc = aesEnc.AES.encrypt(JSON.stringify(data2enc), pwd)
   var aeskey = textEnc.key.toString()
   var aesiv = textEnc.iv.toString()
-  console.log("enc aes key="+pwd)
   wx.setStorage({
     key: 'aeskey2server',
     data: pwd,

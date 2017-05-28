@@ -2,8 +2,9 @@ var app = getApp()
 Page({
     data:{
         username:"",
-        contact:"",
-        addition:""
+        country:"",
+        area:"",
+        avatarUrl:""
     },
     onLoad:function(){
         const self = this 
@@ -15,7 +16,8 @@ Page({
             var gender = userInfo.gender //性别 0：未知、1：男、2：女
             var province = userInfo.province
             var city = userInfo.city
-            var add =" " + province + city
+            var country = userInfo.country
+            var add =" "
             if(gender == 1){
                 add += " 男"
             }
@@ -27,7 +29,10 @@ Page({
             }
             self.setData({
                 username:name,
-                addition:add
+                addition:add,
+                avatarUrl: avatarUrl,
+                area:city+" "+province,
+                country:country 
             })
           },
           fail: function() {

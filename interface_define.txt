@@ -21,8 +21,7 @@ login：
     aesEncText: {
         friendID:<the message's destination>(string),
         messageEnc:<message contain>(string),
-        trd:<sender's nickName>(string),
-        seq:<confirm number>(int)
+        sessionid:<the recognized code>(string)
     }
 }
 
@@ -32,7 +31,7 @@ login：
     aeskeyEnc: <服务器公钥加密的用户密钥>
     aesEncText: {
         trd:3rd_session,
-        tempId:临时ID
+        inviteCode:临时ID
     }
 }
 
@@ -43,70 +42,81 @@ login：
     aesEncText: {
         trd:3rd_session,
         friendTempId:临时ID,
-        seq:1   //对于受邀请的好友（即给服务器发送state = 5的用户），需要服务器将其seq置0
     }
 }
+拒绝好友通信请求:
+{
+  state:6,
+  aeskeyEnc: <服务器公钥加密的用户密钥>
+  aesEncText: {
+        inviteCode:<recved inviteCode>(string)
+  }
+}
+验证失败：
+{
+  state:7,
+  aeskeyEnc: <服务器公钥加密的用户密钥>
+  aesEncText: {
+    trd:<my 3rd>(string)
+    result:<0 for fail, 1 for success>(int)
+    inviteCode:<recved inviteCode>(string)
+  }
+}
+
 
 Part2:
 服务器->后台数据格式：
 注：数据都用对象存储，发送前用JSON.stringify转换
 
-login：
+login：----login.js
 登录成功返回:
 {
     reply:<3rd>(string),
     pubkey:<server public rsa key>(string)
 }
-离线消息发送：
+离线消息发送：---dialogList.js
 {
     state:1,
-    secret:{
-        log:{<json obj>}
-        /*{
-            text: <offline text>(string),
-            from: <friendID>(string),
-            time:<send time>(string)
-        }*/
-        seq:<client seq + 1>(int),
-    }
+    log:{<json obj>}
+    /*{
+        sessionid: <offline text>(string),
+        text:<data from friend>(string),
+        time:<sent time>
+    }*/
+    seq:<client seq + 1>(int),
 }
-离线消息发送完毕：
-{
-	state:0,
-    secret:{
-        seq:<client seq + 1>(int)
-    }
-    
-}
-消息转发:
+消息转发:----dialog.js
 {
 	state:3,
-    secret:{
-        text:<message from friend>(string),
-        from:<friendName>(string),
-        time:<发送消息的时间>(string)
-        seq:<seq + 1>(int)
-    }	
+  sessionid: <offline text>(string),
+  text:<data from friend>(string),
+  time:<sent time>
 }
+
+
 服务器更新用户标识：
 {
     state:4,
-    secret:{
-        friendPermanentId:<服务器返回tempId对应登录时存在服务器上的永久id>,
-        seq:<seq + 1>(int)
-    }
+    inviteCode:<the code sentback by invited user>(string)
+    friendId:<服务器返回InviteCode发送者的id>,
 }
-服务器收到用户的临时ID,返回确认信息：
+
+服务器收到邀请者的InviteCode,返回确认信息：
 {
     state:5,
-    secret:{
-        seq:<用户seq+1>(int)
-    }
 }
-U2FsdGVkX1+horALUjf4x1NVawXtaUKGf9SKEUCRld5p eBEGuK0EGQGyoe55JWuj
-ieamynv4xCATWfi5ibpK/oXzJjaeKwoP4G8Wx821GO0=
-U2FsdGVkX1/Nr4+Iv6ZwagGh+i1TA+M9HQjw/DZdc3dp osrEdw+/nXI8QstCFmCM
-2j3lcR8kmX7LJoe3dtC1MXSIVHFguNiu0whOmvWjoyE=
+
+
+服务器收到被邀请者的----recvInviteReply
+①拒绝邀请消息
+②验证通过/失败消息 时，需要给邀请者返回以下信息:
+{
+  state:6,
+  accept:<0 for refuse,1 for accept>(int),
+  result:<0 for not pass, 1 for pass>(int),
+  inviteCode:<sent by inviter>,
+  friendId:<如果受邀者接受请求且答对问题则返回受邀者的永久id，否则为空>
+}
 
 
 

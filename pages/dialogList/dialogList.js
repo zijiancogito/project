@@ -1,14 +1,8 @@
 var promise = require("../../lib/Promise.js")
 var connSocket = require("../../function/connect.js")
 var enc = require("../../function/encAndRand.js")
-var name = ""
-var tempId = ""
-var hashedId = ""
-var avatarUrl = ""
-var province = ""
-var city = ""
-var country = ""
-var gender = ""
+var aesEnc = require("../../crypto/crypto-js.js")
+var msgEnc = require("../../function/msgProc.js")
 var app = getApp()
 Page({
     data:{
@@ -27,40 +21,10 @@ Page({
                 userInfo:userInfo
             })
         })
-        for(var i= 0; i < fl.length;i++){
-            if(fl[i].message.length != 0){
-                tempList = [...tempList,fl[i]]
-            }
-        }
         this.setData({
-            list:tempList
+            list:fl
         })
-        wx.getUserInfo({
-          success: function (res) {
-            var userInfo = res.userInfo
-            self.name = userInfo.nickName
-            self.avatarUrl = userInfo.avatarUrl
-            self.gender = userInfo.gender
-            self.province = userInfo.province
-            self.city = userInfo.city
-            self.country = userInfo.country
-            var promise = new Promise(function (resolve, reject) {
-              if (self.name != undefined) {
-                resolve("get name success");
-              } else {
-                reject("get name failed");
-              }
-            });
-            promise.then(function (value) {
-              console.log(value)
-              var rand = enc.random()
-              self.tempId = rand + self.name
-              self.hashedId = aesEnc.MD5(self.tempId).toString()
-            }, function (value) {
-              console.log(value)
-            });
-          }
-        }) 
+        
         wx.showToast({
             title:"正在从服务器加载离线消息",
             icon:"loading",
@@ -89,6 +53,11 @@ Page({
         },1000)
     },
     msgHandler:function(data){
+      wx.showToast({
+        title: "接收离线消息完毕！",
+        icon: "success",
+        duration: 3000
+      })
         //离线消息暂时用数组传输，视服务器方便而定
         /*
         数组元素格式{
@@ -106,25 +75,29 @@ Page({
         var recv = JSON.parse(data)
         this.data.msgRecv = true
         var tempList = wx.getStorageSync("friendList")
-        if(recv.state === 1){
-            var secretObj = enc.aesDecrypt(recv.secret)
+        if (recv.state == 6) {
+          msgEnc.recvInviteReply(recv)
+        }
+        else if(recv.state === 1){
             var countLen = 0
-            for(var item in secretObj.log){
+            for (var item in recv.log){
               countLen++ 
             }
             var seq = wx.getStorageSync("seq")
-            if (seq + 1 != secretObj.seq){
+            if (seq + 1 != recv.seq){
               console.log("wrong seq at recving offline msg")
               return
             }
             wx.setStorageSync("seq",seq+2)
             for (var i = 0; i < countLen;i++){
               for (var j = 0; j < tempList.length;j++)
-                if (tempList[j].friendID == secretObj.log[i].from){
+                if (tempList[j].sessionId == recv.log[i].sessionId){
                     tempList[i].count++;
+                    var contains = aesEnc.AES.decrypt(recv.log[i].text)
                     msgInfo = {
-                      text: secretObj.log[i].text,
-                      time: secretObj.log[i].time
+                      text: contains,
+                      time: recv.log[i].time,
+                      from: "recv"
                     }
                     tempList[i].message = [...tempList[i].message, msgInfo];//更新msg列表（聊天记录）
                     wx.setStorageSync('friendList',tempList)
@@ -135,33 +108,14 @@ Page({
                 }
             }
         }
-        else if(recv.state === 0){
-          var secretObj = enc.aesDecrypt(recv.secret)
-          var seq = wx.getStorageSync("seq")
-          if (secretObj.seq != seq + 1) {
-            console.log("wrong seq at finish recving offline msg")
-            return
-          }
-          wx.showToast({
-              title:"接收离线消息完毕！",
-              icon:"success",
-              duration:3000
-          })
-          wx.setStorageSync("seq", seq + 2)
-        }
         else if(recv.state == 3){
             //接收到在线消息
-            var secretObj = enc.aesDecrypt(recv.secret)
-            var seq = wx.getStorageSync("seq")
-            if (secretObj.seq != seq + 1){
-              console.log("wrong seq at recving online msg")
-              return
-            }
             for(var i = 0;i<tempList.length;i++){
-              if (tempList[i].friendID == secretObj.from){
+              if (tempList[i].sessionId == recv.sessionId){
+                    var contains = aesEnc.AES.decrypt(recv.log[i].text)
                     var tempData = {
-                        text: secretObj.text,
-                        time: secretObj.time,
+                        text: contains,
+                        time: recv.time,
                         from:"recv"
                     }
                     tempList[i].count++;
@@ -173,46 +127,24 @@ Page({
                     break;
                 }
             }
-          wx.setStorageSync("seq", seq + 2)
         }
         else{
             console.log("离线消息接收时出现意外state")
         }
     },
-    onShareAppMessage: function () {
+    onShareMessage: function () {
       var that = this
-      return {
-        title: '邀请好友进行秘密通信',
-        path: '/page/share/share?name=' + that.name + "&tempId=" + that.hashedId + "&avatarUrl=" + that.avatarUrl + "&province=" + that.province + "&city=" + that.city + "&country=" + that.country + "&gender" + that.gender,
-        success: function (res) {
-          console.log("share success")
-          conn.setRecvCallback(that.recvConfirm)
-          var trd = wx.getStorageSync("trd_session_key")
-          console.log("temp id is : "+that.hashedId)
-          var dataSent = {
-            tempId: that.hashedId,
-            trd: trd
-          }
-          var data = enc.sendEncData(dataSent, 4)
-          conn.sendMsg(data, that.resolve, that.reject)
+      wx.navigateTo({
+        url: '../QuestionSet/QuestionSet',
+        success:function(res){
+           console.log("navigate to question success")
         },
-        fail: function (res) {
-          console.log("share failed")
+        fail: function (res){
+          console.log(res)
         }
-      }
+      })
     },
-    recvConfirm: function (res) {
-      var recv = JSON.parse(res)
-      var msg = enc.aesDecrypt(recv.secret)
-      var seqRecv = msg.seq
-      var seq = wx.getStorageSync("seq")
-      if (seqRecv == seq + 1) {
-        wx.setStorageSync("seq", seq + 2)
-      }
-      else {
-        console.log("seq wrong at page friendList")
-      }
-    },
+
     gopage:function(url){
         wx.navigateTo({
             url: url,

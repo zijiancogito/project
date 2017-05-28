@@ -1,8 +1,12 @@
 var conn = require( "../../function/connect.js")
 var rsaEnc = require("../../rsa/cryptico.js")
+var enc = require("../../function/encAndRand.js")
+var msgEnc = require("../../function/msgProc.js")
 var aesEnc = require("../../crypto/crypto-js.js")
 var app = getApp()
-var tempList
+var tempList = ""
+var sid = ""
+var myAvatar = ""
 Page({
   data:{
     messages:[],
@@ -10,20 +14,32 @@ Page({
     userName:"",
     msgRecv:false,
     inputContent:[],
-    inputValue:""
+    inputValue:"",
   },
   onLoad:function(options){
     const self = this;
     conn.connect(self.resolve,self.reject);
+    app.getUserInfo(function (userInfo){
+      //获取头像
+      myAvatar  = userInfo.avatarUrl
+    })
+    sid = options.sessionId
+    var tempList = wx.getStorageSync("friendList")
+    for(var i = 0; i < tempList.length;i++){
+      if (tempList[i].sessionId == sid){
+        var temp = tempList[i]
+        console.log()
+      }
+    }
     this.setData({
       friendName:options["name"],
     })
-    var tempList = wx.getStorageSync('friendList')
     var msg = []
     tempList = wx.getStorageSync('friendList')
     for(var i = 0; i < tempList.length;i++){
       if(tempList[i].name == options["name"] && tempList[i].message.length != 0){
           tempList[i].count = 0//清空未读消息数
+          var avatar = tempList[i].avatarUrl
           wx.setStorageSync('friendList', tempList)
           msg = [...tempList[i].message]
           break;
@@ -80,7 +96,8 @@ Page({
         this.setData({
           messages: [...this.data.messages, {
                   text: this.data.inputContent.message,
-                  from: 'sent'
+                  from: 'sent',
+                  avatarUrl:myAvatar
             }]
         })
         this.setData({
@@ -88,12 +105,37 @@ Page({
         })
         const _self = this
         var trd = wx.getStorageSync("trd_session_key")
-        var dataSent = {
-                friendSecret:_self.data.friendID,//好友长期秘密
-                message:_self.data.messages[_self.data.messages.length - 1].text,
-                trd: trd
+        plaintext = _self.data.messages[_self.data.messages.length - 1].text
+        var friendInfo = {}
+        var found = 0
+        var enctext = ""
+        for(var i = 0;i < tempList.length;i++){
+          if(tempList[i].sessionId == sid){
+            friendInfo = tempList[i]
+            found = i
+            break;
+          }
         }
-        this.sendAESdata(dataSent,3)
+        var seqObj = msgEnc.seqEncrypt(plaintext, friendInfo)
+        if(seqObj.update == 0){
+          tempList[found].seqSentIndex = seqObj.index;
+          enctext=seqObj.enctext
+        }
+        else{
+          tempList[found].seqSent = seqObj.seqRev;
+          tempList[found].seqSentIndex = seqObj.index;
+          tempList[found].secret = seqObj.secret;
+          tempList[found].seqIndex = seqIndex
+          enctext = seqObj.enctext
+        }
+        var dataSent = {
+            friendID:_self.data.friendID,//好友长期秘密
+            messageEnc: enctext,
+            sessionid: sid
+        }
+        wx.setStorageSync("friendList",tempList)//存入缓存
+        var encData = enc.sendEncData(dataSent,3)
+        conn.sendMsg(encData,this.resolve,this.reject)
     },
   msgHandler:function(data){
     //离线消息暂时用数组传输，视服务器方便而定
@@ -111,28 +153,105 @@ Page({
     */
     var recv = JSON.parse(data)
     this.data.msgRecv = true
-    var friendID = wx.getStorageSync("friendList")
-    if(recv.state === 3 && recv.from == self.data.friendID){
-      //接收到的是当前会话窗口好友的在线消息
-       this.setData({
-          messages: [...this.data.messages, {
-                  text: recv.message,
-                  from: 'recv'
-          }]
-       })
+    var tempList = wx.getStorageSync("friendList")
+    if (recv.state == 6) {
+      msgEnc.recvInviteReply(recv)
     }
-    else if(recv.state === 3 && recv.from != self.data.friendID){
-      //收到的是其他好友的在线消息
-      for(var i = 0; i< tempList.length;i++){
-        if(tempList[i].name == recv.from){
-            var tempData = {
-              text:recv.text,
-              from:"recv"
-            }
-            tempList[i].message = [...tempList[i].message,tempData];
+    else if(recv.state === 3){
+      if (sid == recv.sessionid) {
+        var found = 0
+        //接收到的是当前会话窗口好友的在线消息
+        for(var i = 0;i < tempList.length;i++){
+          if(tempList[i].sessionId == sid){
+            found = i
             break;
-        } 
+          }
+        }
+        flag = 1
+        var temp = tempList[found]
+        var plaintext = ""
+        var firstContact = ""
+        var seqObj = msgEnc.seqDecrypt(recv.text, temp)
+        if (seqObj.update == 1) {
+          tempList[found].seqRecv = seqObj.seqRev;
+          tempList[found].seqRecvIndex = seqObj.index;
+          tempList[found].secret = seqObj.secret;
+          tempList[found].seqIndex = seqIndex
+          plaintext = seqObj.plaintext
+        }
+        else{
+          tempList[found].seqRecvIndex = seqObj.index;
+          plaintext = seqObj.plaintext
+        }
+        try {
+          firstContact = JSON.parse(plaintext)
+        }
+        catch (e) {
+          flag = 2;
+        }
+        if (flag == 1) {
+          //这是第一条收到的消息，也就是好友的问候消息,附带好友资料信息
+          tempList[found].name = firstContact.name
+          tempList[found].avatarUrl = firstContact.avatarUrl
+          tempList[found].country = firstContact.country
+          tempList[found].gender = firstContact.gender
+          tempList[found].city = firstContact.city
+          tempList[found].province = firstContact.province
+          this.setData({
+            messages: [...this.data.messages, {
+              text: firstContact.text,
+              time: recv.time,
+              from: 'recv',
+              avatarUrl: tempList[found].avatarUrl
+            }]
+          })
+        }
+        else {
+          //这不是第一条消息
+          this.setData({
+            messages: [...this.data.messages, {
+              text: plaintext,
+              time: recv.time,
+              from: 'recv',
+              avatarUrl:tempList[found].avatarUrl
+            }]
+          })
+        }
       }
+      else {
+      //收到的是其他好友的在线消息,暂时默认不是第一条消息
+        var found = 0
+        for (var i = 0; i < tempList.length; i++) {
+          if (tempList[i].sessionId == recv.sessionId) {
+            found = i
+            break;
+          }
+        }
+        var temp = tempList[found]
+        var plaintext = ""
+        var firstContact = ""
+        var seqObj = msgEnc.seqDecrypt(recv.text, temp)
+        if (seqObj.update == 1) {
+          tempList[found].seqRecv = seqObj.seqRev;
+          tempList[found].seqRecvIndex = seqObj.index;
+          tempList[found].secret = seqObj.secret;
+          tempList[found].seqIndex = seqIndex
+          plaintext = seqObj.plaintext
+        }
+        else {
+          tempList[found].seqRecvIndex = seqObj.index;
+          plaintext = seqObj.plaintext
+        }
+        this.setData({
+          messages: [...this.data.messages, {
+            text: plaintext,
+            time: recv.time,
+            from: 'recv',
+            avatarUrl:tempList[found].avatarUrl
+          }]
+        })
+      }
+       wx.setStorageSync("friendList",tempList)
     }
     else{
       console.log("dialog消息处理有问题")
@@ -143,30 +262,5 @@ Page({
   },
   reject:function(data){
     console.log(data)
-  },
-  sendAESdata: function (data2enc,state) {
-    var pwd = "123456"//用于生成aes密钥的字串，待改进
-    var textEnc = aesEnc.AES.encrypt(JSON.stringify(data2enc), pwd)
-    var aeskey = textEnc.key.toString()
-    wx.setStorage({
-      key: 'aeskey2server',
-      data: pwd,
-      success: function () {
-        console.log("set aeskey successs")
-      },
-      fail: function (res) {
-        console.log(res)
-      }
-    })
-    var aesKeyEnc = rsaEnc.cryptico.encrypt(aeskey, wx.getStorageSync("server_public_key"));
-    var textSent = textEnc.ciphertext.toString()
-    var that = this
-    var dataSent = {
-      state: state,
-      aeskeyEnc: aesKeyEnc.cipher,
-      aesEncText: textSent
-    }
-    console.log(dataSent)
-    conn.sendMsg(dataSent, that.resolve, that.reject)
   },
 })

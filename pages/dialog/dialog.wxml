@@ -4,7 +4,9 @@
   <scroll-view scroll-y="true" class="timeline flex-rest-height">
   <view> {{this.data.friendState}}</view>
     <block wx:for="{{messages}}" wx:for-item = "item">
+    
       <view class="message flex-row {{item.from === 'sent' ? 'message-sent' : ''}}">
+      <image src="{{item.avatarUrl}}" style="margin-right: 5rpx;vertical-align: middle;width:100rpx; height: 100rpx;"/>
         <text wx:if="{{!item.image}}" class="message-text {{item.from === 'sent' ? 'message-sent-text' : 'message-received-text'}}">{{item.text}}</text>
         <image wx:else src="{{item.text}}" class="message-image"></image>
       </view>
