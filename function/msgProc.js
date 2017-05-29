@@ -105,7 +105,7 @@ function recvInviteReply(recv){
         tempList[i].sessionId = aesEnc.MD5(myId + tempList[i].secret + recv.friendId)
         var seq1 = testRandom(aesEnc.MD5(myId + tempList[i].secret), seqLen, seqStart, seqEnd)
         var seq2 = testRandom(aesEnc.MD5(recv.friendId + tempList[i].secret), seqLen, seqStart, seqEnd)
-        var seq3 = testRandom(tempList[i].secret, seqLen, 0, seqLen)
+        var seq3 = testRandom(aesEnc.MD5(tempList[i].secret), seqLen, 0, seqLen)
         tempList[i].seqSent = seq1;
         tempList[i].seqRecv = seq2;
         tempList[i].seqIndex = seq3;
@@ -145,7 +145,7 @@ function testRandom(seed,num,start,end){
 }
 
 module.exports= {
-  test: testRandom,
+  rand: testRandom,
   recvInviteReply: recvInviteReply,
   seqDecrypt: seqDecrypt,
   seqEncrypt: seqEncrypt

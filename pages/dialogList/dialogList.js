@@ -145,14 +145,14 @@ Page({
       })
     },
     jumpShare:function(){
-      var question = "我是谁"
-      var tip = "输入我的中文全名"
+      var question = "我们初次见面的年月？"
+      var tip = "比如201705"
       var rand = "123456"
-      var ans = "江家伟"
-      var hashAns = aesEnc.MD5(ans+rand)
+      var ans = "201301"
+      var hashAns = aesEnc.SHA256(ans+rand)
       var InviteCode = "233333"
       wx.navigateTo({
-        url: '/pages/share/share?question=' + question + '&tip=' + tip + "&hashAns=" + hashAns + '&rand=' + rand + "&invitedCode=" + InviteCode,
+        url: '/pages/login/login?question=' + question + '&tip=' + tip + "&hashAns=" + hashAns + '&rand=' + rand + "&InvitedCode=" + InviteCode,
       })
     },
     gopage:function(url){

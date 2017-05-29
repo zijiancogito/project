@@ -52,7 +52,7 @@ login：
         inviteCode:<recved inviteCode>(string)
   }
 }
-验证失败：
+验证结果：
 {
   state:7,
   aeskeyEnc: <服务器公钥加密的用户密钥>

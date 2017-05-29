@@ -6,39 +6,39 @@ var Promise = require("../../lib/Promise.js")
 var app = getApp()
 var scan = '../scanQRCode/scanQRCode'
 var code = '../QRCode/QRCode'
-var InvitedCode = ""
 var trd_recv_state = 0
 var isShared = 0
+var question = ""
+var tip = ""
+var hashAns = ""
+var rand = ""
+var inviteCode = ""
 Page({
   data: {
   },
   bindChange:function(e){
     this.data.loginInfo[e.currentTarget.id] = e.detail.value
   },
-  onLoad: function (options) {
+  onLoad: function (options){
     console.log(options)
-    InvitedCode = options.InvitedCode
     //连接服务器
     connWebSocket.connect(this.resolve,this.reject);
     const that = this
     wx.login({
       success: function (res) {
-        if (options.name != undefined) {
+        if (options.question != undefined){
           isShared = 1
-          var friendSet = {
-            name: options.name,
-            friendID: options.friendTempID,
-            avatarUrl: options.avatarUrl,
-            gender: options.gender,
-            province: options.province,
-            city: options.city,
-            country: options.country,
-            inviteCode:"",
-            message: [],
-            count: 0
-          }
+          inviteCode = options.InvitedCode
+          console.log(inviteCode)
+          question = options.question
+          tip = options.tip
+          rand = options.rand
+          hashAns = options.hashAns
           var tempList = wx.getStorageSync("friendList")
-          tempList.push(friendSet)
+          var newFriend = {
+            friendId: options.InvitedCode
+          }
+          tempList.push(newFriend)
           wx.setStorageSync("friendList",tempList)
         }
         console.log(wx.getStorageSync("friendList"))
@@ -47,7 +47,10 @@ Page({
           code: res.code
         }
         connWebSocket.setRecvCallback(that.sessionKeyRecv)
-        connWebSocket.sendMsg(dataSent, that.resolve, that.reject)
+        setTimeout(function(){
+          connWebSocket.sendMsg(dataSent, that.resolve, that.reject)
+        },1000)
+        
         if (isShared != 1) {//用户不是被邀请的
           console.log("非邀请用户")
           wx.checkSession({
@@ -108,45 +111,12 @@ Page({
     wx.setStorageSync("uniqueId",recv.id)
     wx.setStorageSync('seq', 0)
     trd_recv_state = 1
+    console.log(inviteCode)
     if(isShared==1){
-      var trd = recv.reply
-      var seq = 1
-      var initData = {
-        trd: trd,
-        InvitedCode: InvitedCode,
-        seq: 1
-      }
-      wx.setStorageSync("seq", seq)
-      var dataSent = enc.sendEncData(initData, 5)
-      connWebSocket.setRecvCallback(this.updateFriendID)
-      connWebSocket.sendMsg(dataSent, this.resolve, this.reject)
-    }
-  },
-  updateFriendID:function(res){
-    var recv = JSON.parse(res)
-    if(recv.state == 5){
-      var msg = enc.aesDecrypt(recv.secret)
-      var seq = wx.getStorageSync("seq")
-      if(seq +1  == msg.seq){
-        var tempList = wx.getStorageSync("friendList")
-        tempList[tempList.length - 1].friendId = msg.friendPermanentId
-        wx.setStorageSync("friendList",tempList)
-        wx.setStorageSync("seq", seq + 2)
-        wx.switchTab({
-          url: '../dialogList/dialogList',
-          success:function(){
-            console.log("switch1 success")
-          },
-          fail:function(){
-            console.log("switch1 failed")
-          }
-        })
-      }
-      console.log("seq wrong at login/updateFriendID")
-    }
-    else{
-      console.log("state wrong at login/updateFriendID")
-    }
+      wx.navigateTo({
+        url: '../share/share?question=' + question + '&tip=' + tip + "&hashAns=" + hashAns + '&rand=' + rand + "&inviteCode=" + inviteCode,
+      })
+     }
   },
   onPullDownRefresh:function(){
     wx.showToast({
