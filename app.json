@@ -12,7 +12,8 @@
     "pages/scanQRCode/scanQRCode",
     "pages/gestureCode/gestureCode",
     "pages/share/share",
-    "pages/answer/answer"
+    "pages/answer/answer",
+    "pages/friendAnswer/friendAnswer"
   ],
   "window": {
     "backgroundTextStyle": "light",

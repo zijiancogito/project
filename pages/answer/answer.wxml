@@ -8,7 +8,7 @@
                                 <label class="weui-label">问题答案：</label>
                         </view>
                         <view class="weui-cell__bd">
-                            <input class="weui-input" placeholder="请输入问题" bindinput="bindAnswerInput" confirm-type="next" type="text"/>
+                            <input class="weui-input" placeholder="请输入答案" bindinput="bindAnswerInput" confirm-type="next" type="text"/>
                         </view>
                     </view>
                 </view>

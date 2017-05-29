@@ -6,12 +6,21 @@ var aesEnc = require("../../crypto/crypto-js.js")
 var app = getApp()
 var tempList = ""
 var sid = ""
+var name = ""
+var avatarUrl = ""
+var country = ""
+var gender = ""
+var city = ""
+var province = ""
+var myname = ""
 var myAvatar = ""
+var mycountry = ""
+var mygender = ""
+var mycity = ""
+var myprovince = ""
 Page({
   data:{
     messages:[],
-    friendName:"",
-    userName:"",
     msgRecv:false,
     inputContent:[],
     inputValue:"",
@@ -20,24 +29,13 @@ Page({
     const self = this;
     conn.connect(self.resolve,self.reject);
     app.getUserInfo(function (userInfo){
-      //获取头像
       myAvatar  = userInfo.avatarUrl
     })
     sid = options.sessionId
-    var tempList = wx.getStorageSync("friendList")
-    for(var i = 0; i < tempList.length;i++){
-      if (tempList[i].sessionId == sid){
-        var temp = tempList[i]
-        console.log()
-      }
-    }
-    this.setData({
-      friendName:options["name"],
-    })
     var msg = []
     tempList = wx.getStorageSync('friendList')
     for(var i = 0; i < tempList.length;i++){
-      if(tempList[i].name == options["name"] && tempList[i].message.length != 0){
+      if(tempList[i].sessionId == sid && tempList[i].message.length != 0){
           tempList[i].count = 0//清空未读消息数
           var avatar = tempList[i].avatarUrl
           wx.setStorageSync('friendList', tempList)
@@ -46,16 +44,9 @@ Page({
         }
     }
     self.setData({
-      messages:[...msg]//显示未读消息
+      messages:[...msg]//显示消息
     })
-    app.getUserInfo(function(data){
-        self.setData({
-            userName:data.nickName
-        })
-    })
-    wx.setNavigationBarTitle({
-        title: self.data.friendName 
-    });
+
   },
   onUnload:function(){
     // 页面关闭
@@ -167,7 +158,7 @@ Page({
             break;
           }
         }
-        flag = 1
+        flag = 2
         var temp = tempList[found]
         var plaintext = ""
         var firstContact = ""
@@ -187,7 +178,9 @@ Page({
           firstContact = JSON.parse(plaintext)
         }
         catch (e) {
-          flag = 2;
+          if(tempList[found].message.length == 1){
+            flag = 1;
+          }
         }
         if (flag == 1) {
           //这是第一条收到的消息，也就是好友的问候消息,附带好友资料信息
@@ -205,6 +198,40 @@ Page({
               avatarUrl: tempList[found].avatarUrl
             }]
           })
+          wx.setNavigationBarTitle({
+            title: tempList[found].name
+          });
+          //收到第一条消息，需要返回自己的个人信息给好友
+          var info = {
+            name:myname,
+            avatarUrl:myAvatar,
+            country:mycountry,
+            city:mycity,
+            province:myprovince,
+            gender:mygender,
+            text:"hello!"//第一条问好消息
+          }
+          var infoExchange = JSON.stringify(info)
+          var seqObj = msgEnc.seqEncrypt(infoExchange, tempList[found])
+          if (seqObj.update == 0) {
+            tempList[found].seqSentIndex = seqObj.index;
+            enctext = seqObj.enctext
+          }
+          else {
+            tempList[found].seqSent = seqObj.seqRev;
+            tempList[found].seqSentIndex = seqObj.index;
+            tempList[found].secret = seqObj.secret;
+            tempList[found].seqIndex = seqIndex
+            enctext = seqObj.enctext
+          }
+          var dataSent = {
+            friendID: _self.data.friendID,//好友长期秘密
+            messageEnc: enctext,
+            sessionid: sid
+          }
+          wx.setStorageSync("friendList", tempList)//存入缓存
+          var encData = enc.sendEncData(dataSent, 3)
+          conn.sendMsg(encData, this.resolve, this.reject)
         }
         else {
           //这不是第一条消息

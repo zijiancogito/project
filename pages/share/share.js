@@ -6,15 +6,7 @@ var city = ""
 var country = ""
 var gender = ""
 Page({
-  onLoad:function(option){
-    const self = this
-    var name = option.name
-    var tempId = option.tempId
-    var avatarUrl = option.avatarUrl
-    var province = option.province
-    var city = option.city
-    var country = option.country
-    var gender = option.gender
+  onLoad:function(options){
     wx.showModal({
       title: "来自小程序Secret Message的邀请",
       content: '你的好友' + name + "邀请你进行秘密通信，是否同意？",
@@ -24,14 +16,14 @@ Page({
       success:function(res){
         if(res.confirm){
           wx.navigateTo({
-            url: '/pages/login/login?name=' + name + "&id=" + tempId + "&avatarUrl=" + avatarUrl + "&province=" + province + "&city=" + city + "&country=" + country + "&gender" + gender,
+            url: '../friendAnswer/friendAnswer?question=' + options.question + "&tip=" + options.tip + "&hashAns=" + options.hashAns + '&rand=' + options.rand + "&invitedCode=" + options.InviteCode
           })
-          console.log("用户点击确定")
+          console.log("接受邀请")
         }
         else if(res.cancel){
-          console.log("用户拒绝")
+          console.log("拒绝邀请")
         }
       }
     })
-  }
+  },
 })

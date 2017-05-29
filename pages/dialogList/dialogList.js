@@ -144,7 +144,17 @@ Page({
         }
       })
     },
-
+    jumpShare:function(){
+      var question = "我是谁"
+      var tip = "输入我的中文全名"
+      var rand = "123456"
+      var ans = "江家伟"
+      var hashAns = aesEnc.MD5(ans+rand)
+      var InviteCode = "233333"
+      wx.navigateTo({
+        url: '/pages/share/share?question=' + question + '&tip=' + tip + "&hashAns=" + hashAns + '&rand=' + rand + "&invitedCode=" + InviteCode,
+      })
+    },
     gopage:function(url){
         wx.navigateTo({
             url: url,

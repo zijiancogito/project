@@ -57,7 +57,7 @@ Page({
     hashAns = aesEnc.SHA256(answer+rand).toString()
     return {
       title: '邀请好友进行秘密通信',
-      path: '/page/share/share?question='+question+'&tip='+tip+"&hashAns="+hashAns+'&rand='+rand+"&invitedCode="+InviteCode,
+      path: '/pages/share/share?question='+question+'&tip='+tip+"&hashAns="+hashAns+'&rand='+rand+"&invitedCode="+InviteCode,
       success: function (res) {
        wx.navigateTo({
          url: '../answer/answer?pageFrom=set&InviteCode=' + that.InviteCode,

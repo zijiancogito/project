@@ -15,5 +15,8 @@
             </navigator>
             <view class="line"></view>
         </block>
+        <view class="weui-btn-area">
+            <button type="primary" class="weui-btn" bindtap="jumpShare">test</button>
+        </view>
     </view>
 </view>
