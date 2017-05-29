@@ -1,4 +1,10 @@
 /**index.wxss**/
+.weui-footer{
+    margin-bottom: 50px;
+}
+.weui-footer_fixed-bottom{
+    margin-bottom: 0;
+}
 .userinfo {
   display: flex;
   flex-direction: column;
@@ -35,4 +41,7 @@
 
 .page__desc{
   text-align: center;
+}
+.page{
+    background-color: #FFFFFF;
 }

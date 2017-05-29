@@ -26,7 +26,6 @@ module.exports = (function(){
         wx.onSocketOpen(function() {
               console.log("连接已建立")
               isWebsocketOpen = true;
-              //console.log("Sockect Open!")
               while(msgToSend.length > 0){
                   var msg = msgToSend.pop();
                   sendMsg(msg);

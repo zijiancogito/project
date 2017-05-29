@@ -17,7 +17,7 @@ function seqEncrypt(msg,friendInfo){
       update: 1,
       seqSent: seqSent,
       index: index,
-      enctext: enctext,
+      enctext: enctext.cipher,
       seqIndex: indexSeq,
       secret: secret
     }
@@ -25,11 +25,11 @@ function seqEncrypt(msg,friendInfo){
   else {
     var indexSeq = friendInfo.seqIndex
     var seqSent = friendInfo.seqSent
-    var pwd = seqSent[indexSeq[index++]]
+    var pwd = seqSent[indexSeq[index++]].toString()
     var enctext = aesEnc.AES.encrypt(msg, pwd)
     return {
       update: 0,
-      enctext: enctext,
+      enctext: enctext.cipher,
       index: index
     }
   }
@@ -43,7 +43,7 @@ function seqDecrypt(msg,friendInfo){
     var seqRecv = res.seqRecv
     var indexSeq = res.indexSeq
     var secret = res.secret
-    var pwd = seqSent[indexSeq[index++]]
+    var pwd = seqSent[indexSeq[index++]].toString()
     var plaintext = aesEnc.AES.decrypt(msg,pwd)
     return{
       update:1,
@@ -115,7 +115,7 @@ function recvInviteReply(recv){
         wx.navigateTo({
           url: '/pages/dialog/dialog?sessionId='+tempList[i].sessionId,
           success:function(){
-            console.log("navigate successful to page: "+ url)
+            console.log("navigate successful to page: " + '/pages/dialog/dialog?sessionId=' + tempList[i].sessionId)
           },
           fail:function(res){
             console.log(res)

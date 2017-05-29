@@ -47,6 +47,7 @@ Page({
             trd:trd,
             seq:seq
         }
+        wx.setStorageSync("seq",seq++)
         setTimeout(function(){ 
           var data = enc.sendEncData(dataSent,2)
           connSocket.sendMsg(data,self.resolve,self.reject)
@@ -79,19 +80,17 @@ Page({
           msgEnc.recvInviteReply(recv)
         }
         else if(recv.state === 1){
+          //收到离线消息
             var countLen = 0
             for (var item in recv.log){
               countLen++ 
             }
             var seq = wx.getStorageSync("seq")
-            if (seq + 1 != recv.seq){
-              console.log("wrong seq at recving offline msg")
-              return
-            }
-            wx.setStorageSync("seq",seq+2)
-            for (var i = 0; i < countLen;i++){
-              for (var j = 0; j < tempList.length;j++)
-                if (tempList[j].sessionId == recv.log[i].sessionId){
+            if(recv.seq == seq){
+              wx.setStorageSync("seq", seq++)
+              for (var i = 0; i < countLen; i++) {
+                for (var j = 0; j < tempList.length; j++)
+                  if (tempList[j].sessionId == recv.log[i].sessionId) {
                     tempList[i].count++;
                     var contains = aesEnc.AES.decrypt(recv.log[i].text)
                     msgInfo = {
@@ -100,13 +99,15 @@ Page({
                       from: "recv"
                     }
                     tempList[i].message = [...tempList[i].message, msgInfo];//更新msg列表（聊天记录）
-                    wx.setStorageSync('friendList',tempList)
+                    wx.setStorageSync('friendList', tempList)
                     this.setData({
-                        list:[...tempList]
+                      list: [...tempList]
                     })
                     break;
-                }
+                  }
+              }
             }
+            
         }
         else if(recv.state == 3){
             //接收到在线消息
@@ -144,17 +145,20 @@ Page({
         }
       })
     },
-    jumpShare:function(){
-      var question = "我们初次见面的年月？"
-      var tip = "比如201705"
-      var rand = "123456"
-      var ans = "201301"
-      var hashAns = aesEnc.SHA256(ans+rand)
-      var InviteCode = "233333"
-      wx.navigateTo({
-        url: '/pages/login/login?question=' + question + '&tip=' + tip + "&hashAns=" + hashAns + '&rand=' + rand + "&InvitedCode=" + InviteCode,
-      })
-    },
+  //           <view class="weui-btn-area" >
+  // <button type="primary" class="weui-btn" bindtap= "jumpShare" > test < /button>
+  // < /view>
+    // jumpShare:function(){
+    //   var question = "我们初次见面的年月？"
+    //   var tip = "比如201705"
+    //   var rand = "123456"
+    //   var ans = "201301"
+    //   var hashAns = aesEnc.SHA256(ans+rand)
+    //   var InviteCode = "233333"
+    //   wx.navigateTo({
+    //     url: '/pages/login/login?question=' + question + '&tip=' + tip + "&hashAns=" + hashAns + '&rand=' + rand + "&InvitedCode=" + InviteCode,
+    //   })
+    // },
     gopage:function(url){
         wx.navigateTo({
             url: url,

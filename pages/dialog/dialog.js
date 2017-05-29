@@ -12,6 +12,7 @@ var country = ""
 var gender = ""
 var city = ""
 var province = ""
+var friendId = ""
 var myname = ""
 var myAvatar = ""
 var mycountry = ""
@@ -96,7 +97,7 @@ Page({
         })
         const _self = this
         var trd = wx.getStorageSync("trd_session_key")
-        plaintext = _self.data.messages[_self.data.messages.length - 1].text
+        var plaintext = _self.data.messages[_self.data.messages.length - 1].text
         var friendInfo = {}
         var found = 0
         var enctext = ""
@@ -119,8 +120,9 @@ Page({
           tempList[found].seqIndex = seqIndex
           enctext = seqObj.enctext
         }
+        friendId = tempList[found].friendId
         var dataSent = {
-            friendID:_self.data.friendID,//好友长期秘密
+            friendID:friendId,//好友长期秘密
             messageEnc: enctext,
             sessionid: sid
         }
@@ -225,7 +227,7 @@ Page({
             enctext = seqObj.enctext
           }
           var dataSent = {
-            friendID: _self.data.friendID,//好友长期秘密
+            friendID:friendId,//好友长期秘密
             messageEnc: enctext,
             sessionid: sid
           }

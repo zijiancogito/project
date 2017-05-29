@@ -5,7 +5,7 @@
                 <view class="weui-cells weui-cells_after-title">
                     <view class="weui-cell weui-cell_input"  style="height:100rpx;">
                         <view class="weui-cell__hd" style="width:180rpx">
-                                <label class="weui-label">问题答案：</label>
+                                <label class="weui-label">问题提示：</label>
                         </view>
                         <view class="weui-cell__bd">
                             <input class="weui-input" placeholder="请输入答案" bindinput="bindAnswerInput" confirm-type="next" type="text"/>
@@ -15,7 +15,7 @@
             </view>
             <view class="line"></view>
             <view class="weui-btn-area">
-                <button class="weui-btn" type="primary" bindtap="answerSet">设置完成</button>
+                <button class="weui-btn" type="primary" open-type="share">设置完成</button>
             </view>
         </view>
     </view>

@@ -19,17 +19,17 @@
                 <view class="weui-cells weui-cells_after-title">
                     <view class="weui-cell weui-cell_input" style="height:50rpx;">
                         <view class="weui-cell__hd" style="width:180rpx">
-                            <label class="weui-label">提示：</label>
+                            <label class="weui-label">答案：</label>
                         </view>
                         <view class="weui-cell__bd">
-                            <input class="weui-input" placeholder="请输入提示" bindinput="bindTipInput" confirm-type="go" type="text"/>
+                            <input class="weui-input" placeholder="请输入答案" bindinput="bindTipInput" confirm-type="go" type="text"/>
                         </view>
                     </view>
                 </view>
             </view>
             <view class="line"></view>
             <view class="weui-btn-area">
-                <button class="weui-btn" type="primary" open-type="share">设置完成</button>
+                <button class="weui-btn" type="primary" bindtap="setFinished">设置完成</button>
             </view>
         </view>
     </view>

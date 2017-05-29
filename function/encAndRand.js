@@ -56,18 +56,11 @@ function aesDecrypt(secret){
   var s = {'log':[], 'seq':0}
   var st = JSON.stringify(s)
    var aesKey = wx.getStorageSync("aeskey2server")
-  console.log("dec aes key="+aesKey)
   var ciphertext1 = aesEnc.AES.encrypt(st, aesKey);
-  console.log(ciphertext1) 
-  console.log(ciphertext1.toString())
   var bytes = aesEnc.AES.decrypt(ciphertext1.toString(), aesKey);
    var plaintext1 = bytes.toString(aesEnc.enc.Utf8);
-   console.log(plaintext1.length)
-
    var ciphertext = aesEnc.AES.decrypt(secret,aesKey)
-   console.log(ciphertext)
    var plaintext = ciphertext.toString(aesEnc.enc.Utf8);
-   console.log(plaintext.length)
    return JSON.parse(plaintext)
 }
 

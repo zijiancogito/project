@@ -19,7 +19,12 @@ App({
                 city:"?",
                 province:"山西",
                 friendId:"",
-                sessionId:"123"
+                sessionId:"123",
+                seqIndex: [0, 1, 3, 2, 5, 4, 6, 8, 9, 5, 11, 2, 3, 19, 17, 15, 12, 19, 12, 3],
+                seqSent: [1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0],
+                seqRecv: [1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0],
+                seqRecvIndex:0,
+                seqSentIndex:0
               }, {
               avatarUrl: "../../image/chen.png",
               name: "高德",
@@ -29,7 +34,12 @@ App({
               city: "安庆",
               province: "安徽",
               friendId: "",
-              sessionId: "234"
+              sessionId: "234",
+              seqIndex: [0,1,3,2,5,4,6,8,9,5,11,2,3,19,17,15,12,19,12,3],
+              seqSent: [1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0],
+              seqRecv: [1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0],
+              seqRecvIndex: 0,
+              seqSentIndex: 0
             }]
     // var initFriend = new Array()
     // initFriend["ab1cd"] =            

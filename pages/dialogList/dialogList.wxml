@@ -4,7 +4,7 @@
             <button type="primary" class="weui-btn" bindtap="onShareMessage">邀请好友进行秘密通信吧！</button>
         </view>
         <block wx:for="{{list}}" class="weui-cells weui-cells_after-title">
-            <navigator url="../dialog/dialog?name={{item.name}}" class="weui-cell weui-cell_access" hover-class="weui-cell_active" style="height:103rpx">
+            <navigator url="../dialog/dialog?sessionId={{item.sessionId}}" class="weui-cell weui-cell_access" hover-class="weui-cell_active" style="height:103rpx">
                 <view  class="weui-cell__hd" style="position: relative;margin-right: 10px;">
                     <image src="{{item.avatarUrl}}" style="margin-right: 5rpx;vertical-align: middle;width:100rpx; height: 100rpx;"></image>
                 </view>
@@ -15,8 +15,6 @@
             </navigator>
             <view class="line"></view>
         </block>
-        <view class="weui-btn-area">
-            <button type="primary" class="weui-btn" bindtap="jumpShare">test</button>
-        </view>
+
     </view>
 </view>
