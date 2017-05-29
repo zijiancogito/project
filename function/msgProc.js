@@ -17,7 +17,7 @@ function seqEncrypt(msg,friendInfo){
       update: 1,
       seqSent: seqSent,
       index: index,
-      enctext: enctext.cipher,
+      enctext: enctext.ciphertext.toString(),
       seqIndex: indexSeq,
       secret: secret
     }
@@ -25,11 +25,11 @@ function seqEncrypt(msg,friendInfo){
   else {
     var indexSeq = friendInfo.seqIndex
     var seqSent = friendInfo.seqSent
-    var pwd = seqSent[indexSeq[index++]].toString()
+    var pwd = seqSent[indexSeq[index++]].toString()//toString影响解密？
     var enctext = aesEnc.AES.encrypt(msg, pwd)
     return {
       update: 0,
-      enctext: enctext.cipher,
+      enctext: enctext.ciphertext.toString(),
       index: index
     }
   }

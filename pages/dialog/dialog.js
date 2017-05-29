@@ -121,6 +121,7 @@ Page({
           enctext = seqObj.enctext
         }
         friendId = tempList[found].friendId
+        console.log(enctext)
         var dataSent = {
             friendID:friendId,//好友长期秘密
             messageEnc: enctext,
