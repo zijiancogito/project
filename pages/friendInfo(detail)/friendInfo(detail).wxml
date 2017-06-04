@@ -1,0 +1,33 @@
+<!-- friendinfo detail wxml -->
+<view class="page" style="height:100%">
+    <view class="page__bd">
+        <view class="space" style="height:45rpx"></view>
+        <view class="weui-panel weui-panel_access">
+            <view class="weui-panel__bd">
+                <view class="weui-media-box weui-media-box_text">
+                    <view class="weui-media-box__title weui-media-box__title_in-text">
+                        {{friendName}}
+                    </view>
+                    <view class="weui-media-box__desc">说明文字</view>
+                </view>
+            </view>
+        </view>
+        <view class="space" style="height:45rpx"></view>
+        <view class="weui-cells weui-cells_after-title">
+            <view class="weui-cell" style="height:60rpx">
+                <view class="weui-cell__bd">联系方式</view>
+                <view class="weui-cell__ft">{{contact}}</view>
+            </view>
+            <view class="line"></view>
+            <view class="weui-cell" style="height:60rpx">
+                <view class="weui-cell__bd">个人简介</view>
+                <view class="weui-cell__ft">{{asume}}</view>
+            </view>
+        </view>
+        <view class="space" style="height:45rpx"></view>
+        <view class="weui-btn-area">
+            <button class="weui-btn" type="primary" bindtap="startDialog">发起会话</button>
+        </view>
+    </view>
+</view>
+

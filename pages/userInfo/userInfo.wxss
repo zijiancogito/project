@@ -1,0 +1,33 @@
+/* userInfo.wxss*/
+
+.page{
+   background-color: #F8F8F8;
+}
+
+.space{
+    background-color: #F8F8F8;
+}
+
+.weui-cells:before {
+    width:max-content;
+    border-top: 1rpx solid #ffffff;
+}
+.weui-cells:after {
+    width:max-content;
+    border-bottom: 1rpx solid #ffffff;
+}
+.weui-cell:before {
+    width:max-content;
+  border-top: 1rpx solid #ffffff;
+  left: 0px;
+}
+.weui-panel:before {
+  border-top: 1rpx solid #ffffff;
+}
+.weui-panel:after {
+  border-bottom: 1rpx solid #ffffff;
+}
+
+.line{
+    border-bottom: 1px solid #d9d9d9;   
+}

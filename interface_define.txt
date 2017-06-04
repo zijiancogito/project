@@ -1,0 +1,122 @@
+Part1:
+后台->服务器数据格式定义：
+login：
+{
+    state:1,
+    code:res.code(string)
+}
+获取离线消息：
+{
+  state:2,
+  aeskeyEnc: <服务器公钥加密的用户密钥>
+  aesEncText: {
+    trd:3rd_session(string),
+    seq:<confirm number>(int)
+  }
+}
+发送消息：
+{
+	state:3,
+    aeskeyEnc: <服务器公钥加密的用户密钥>
+    aesEncText: {
+        friendID:<the message's destination>(string),
+        messageEnc:<message contain>(string),
+        sessionid:<the recognized code>(string)
+    }
+}
+
+给服务器发送临时id，用于邀请好友进行通信：
+{
+	state:4,
+    aeskeyEnc: <服务器公钥加密的用户密钥>
+    aesEncText: {
+        trd:3rd_session,
+        inviteCode:临时ID
+    }
+}
+
+受邀请好友发送给服务器用户的临时id，开始和用户的第一次对话（即发送邀请的用户的id）：
+{
+    state:5,
+    aeskeyEnc: <服务器公钥加密的用户密钥>
+    aesEncText: {
+        trd:3rd_session,
+        friendTempId:临时ID,
+    }
+}
+拒绝好友通信请求:
+{
+  state:6,
+  aeskeyEnc: <服务器公钥加密的用户密钥>
+  aesEncText: {
+        inviteCode:<recved inviteCode>(string)
+  }
+}
+验证结果：
+{
+  state:7,
+  aeskeyEnc: <服务器公钥加密的用户密钥>
+  aesEncText: {
+    trd:<my 3rd>(string)
+    result:<0 for fail, 1 for success>(int)
+    inviteCode:<recved inviteCode>(string)
+  }
+}
+
+
+Part2:
+服务器->后台数据格式：
+注：数据都用对象存储，发送前用JSON.stringify转换
+
+login：----login.js
+登录成功返回:
+{
+    reply:<3rd>(string),
+    pubkey:<server public rsa key>(string)
+}
+离线消息发送：---dialogList.js
+{
+    state:1,
+    log:{<json obj>}
+    /*{
+        sessionid: <offline text>(string),
+        text:<data from friend>(string),
+        time:<sent time>
+    }*/
+    seq:<client seq + 1>(int),
+}
+消息转发:----dialog.js
+{
+	state:3,
+  sessionid: <offline text>(string),
+  text:<data from friend>(string),
+  time:<sent time>
+}
+
+
+服务器更新用户标识：
+{
+    state:4,
+    inviteCode:<the code sentback by invited user>(string)
+    friendId:<服务器返回InviteCode发送者的id>,
+}
+
+服务器收到邀请者的InviteCode,返回确认信息：
+{
+    state:5,
+}
+
+
+服务器收到被邀请者的----recvInviteReply
+①拒绝邀请消息
+②验证通过/失败消息 时，需要给邀请者返回以下信息:
+{
+  state:6,
+  accept:<0 for refuse,1 for accept>(int),
+  result:<0 for not pass, 1 for pass>(int),
+  inviteCode:<sent by inviter>,
+  friendId:<如果受邀者接受请求且答对问题则返回受邀者的永久id，否则为空>
+}
+
+
+

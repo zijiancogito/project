@@ -1,0 +1,25 @@
+<!--index.wxml-->
+
+<view class="page__bd">
+        <view class="weui-loadmore">
+            <view class="weui-loading"></view>
+            <view class="weui-loadmore__tips">正在加载</view>
+        </view>
+</view>
+<view class="page">
+    <view  bindtap="bindViewTap" class="userinfo">
+    <text class="userinfo-nickname">{{userInfo.nickName}}</text>
+  </view>
+    <view class="page__hd">
+        <view class="page__title">欢迎使用安全聊天</view>
+        <view class="page__bd page__bd_spacing">
+
+    </view>
+    <image src="../../image/processbar.gif"/>
+    <view class="weui-footer">
+    <view class="weui-footer__text">Copyright  2017-5-29 HITST</view>
+    </view>
+    </view>
+</view>
+
+

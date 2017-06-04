@@ -1,0 +1,45 @@
+{
+  "pages": [
+    "pages/login/login",
+    "pages/QuestionSet/QuestionSet",
+    "pages/friendInfo(simple)/friendInfo(simple)",
+    "pages/friendInfo(detail)/friendInfo(detail)",
+    "pages/protocol/protocol",
+    "pages/userInfo/userInfo",
+    "pages/dialog/dialog",
+    "pages/dialogList/dialogList",
+    "pages/QRCode/QRCode",
+    "pages/scanQRCode/scanQRCode",
+    "pages/gestureCode/gestureCode",
+    "pages/share/share",
+    "pages/answer/answer",
+    "pages/friendAnswer/friendAnswer"
+  ],
+  "window": {
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#000",
+    "navigationBarTitleText": "SecretMessaging",
+    "navigationBarTextStyle": "light",
+    "enablePullDownRefresh": true
+  },
+  "tabBar": {
+    "color": "#a9b7b7",
+    "selectedColor": "#11cd6e",
+    "borderStyle": "white",
+    "backgroundColor": "#ffffff",
+    "list": [
+      {
+        "pagePath": "pages/userInfo/userInfo",
+        "text": "用户信息",
+        "iconPath": "image/user.png",
+        "selectedIconPath": "image/user.png"
+      },
+      {
+        "pagePath": "pages/dialogList/dialogList",
+        "text": "会话",
+        "iconPath": "image/chat.png",
+        "selectedIconPath": "image/chat.png"
+      }
+    ]
+  }
+}
