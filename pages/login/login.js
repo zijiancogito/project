@@ -29,14 +29,16 @@ Page({
         if (options.question != undefined){
           isShared = 1
           inviteCode = options.InvitedCode
-          console.log(inviteCode)
+          console.log("shared friend ! inviteCode = "+inviteCode)
           question = options.question
           tip = options.tip
           rand = options.rand
           hashAns = options.hashAns
+          var name = options.name
           var tempList = wx.getStorageSync("friendList")
           var newFriend = {
-            friendId: options.InvitedCode
+            friendId: options.InvitedCode,
+            name: name
           }
           tempList.push(newFriend)
           wx.setStorageSync("friendList",tempList)
@@ -126,6 +128,7 @@ Page({
     })
     //connWebSocket.connect(this.resolve,this.reject)
     const that = this
+
     wx.login({
       success: function (res) {
         var dataSent = {
@@ -141,16 +144,22 @@ Page({
           console.log("you are online")
           setTimeout(function(){
             if(trd_recv_state){
-              wx.stopPullDownRefresh()
-              wx.switchTab({
-                url: '../dialogList/dialogList',
-                success: function(res){
-                  console.log(res)
-                },
-                fail: function() {
-                  console.log("switch failed")
-                }
-              })
+              if (isShared == 1) {
+                wx.navigateTo({
+                  url: '../share/share?question=' + question + '&tip=' + tip + "&hashAns=" + hashAns + '&rand=' + rand + "&inviteCode=" + inviteCode,
+                })
+              }
+              else{
+                wx.switchTab({
+                  url: '../dialogList/dialogList',
+                  success: function (res) {
+                    console.log(res)
+                  },
+                  fail: function () {
+                    console.log("switch failed")
+                  }
+                })
+              }
             }
             else{
               wx.stopPullDownRefresh()
@@ -161,6 +170,7 @@ Page({
               })
             }
           },3000)
+          wx.stopPullDownRefresh()
         }
       })
     }

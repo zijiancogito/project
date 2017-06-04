@@ -212,8 +212,13 @@ Page({
             city:mycity,
             province:myprovince,
             gender:mygender,
-            text:"hello!"//第一条问好消息
+            text:"宝塔镇河妖！"//第一条问好消息
           }
+          var t = new Date()
+          tempList[found].message.push({
+            text: "宝塔镇河妖！",
+            time:t.getDate+t.getHours+t.getMinutes+t.getSeconds
+          })
           var infoExchange = JSON.stringify(info)
           var seqObj = msgEnc.seqEncrypt(infoExchange, tempList[found])
           if (seqObj.update == 0) {

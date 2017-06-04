@@ -10,6 +10,7 @@ var InviteCode = ""
 var question = ""
 var tip = ""
 var hashAns = ""
+var myname = ""
 Page({
   data: {
   
@@ -20,9 +21,15 @@ Page({
     question = options.question
     InviteCode = options.inviteCode
     answer = options.answer
+    wx.getUserInfo({
+      success: function (res) {
+        var userInfo = res.userInfo
+        name = userInfo.nickName
+      }
+    })
     var trd = wx.getStorageSync("trd_session_key")
     //暂时以InviteCode作为目前好友的唯一标识，并发送给服务器
-    tempInfo.inviteCode = options.inviteCode
+    tempInfo.friendId = options.inviteCode
     var dataSent = {
       inviteCode: options.inviteCode,
       trd: trd
@@ -37,9 +44,10 @@ Page({
     var rand = enc.random()
     const that = this
     hashAns = aesEnc.SHA256(answer + rand).toString()
+    console.log(name)
     return {
       title: '邀请好友进行秘密通信',
-      path: '/pages/login/login?question=' + question + '&tip=' + tip + "&hashAns=" + hashAns + '&rand=' + rand + "&InvitedCode=" + InviteCode,
+      path: '/pages/login/login?question=' + question + '&tip=' + tip + "&hashAns=" + hashAns + '&rand=' + rand + "&InvitedCode=" + InviteCode+"&name="+name,
       success: function (res) {
         tempInfo.secret = answer
         tempList.push(tempInfo)
