@@ -50,6 +50,8 @@ Page({
       path: '/pages/login/login?question=' + question + '&tip=' + tip + "&hashAns=" + hashAns + '&rand=' + rand + "&InvitedCode=" + InviteCode+"&name="+name,
       success: function (res) {
         tempInfo.secret = answer
+        tempInfo.avatarUrl = "../../image/love.png"
+        tempInfo.name = "Waiting for answer..."
         tempList.push(tempInfo)
         wx.setStorageSync("friendList", tempList)
         wx.navigateBack({

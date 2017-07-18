@@ -16,9 +16,10 @@
                   <text class="title">{{item.name}}</text>
                 </view>
                 <view class="weui-cell__ft weui-cell__ft_in-access"></view>
-                
             </navigator>
             <view class="line"></view>
+                        <view class="weui-btn-area" >
+  </view>
         </block>
     </view>
 </view>

@@ -20,7 +20,7 @@ Page({
       success:function(res){
         if(res.confirm){
           wx.navigateTo({
-            url: '../friendAnswer/friendAnswer?question=' + options.question + "&tip=" + options.tip + "&hashAns=" + options.hashAns + '&rand=' + options.rand + "&invitedCode=" + options.inviteCode
+            url: '../friendAnswer/friendAnswer?name='+name+'&question=' + options.question + "&tip=" + options.tip + "&hashAns=" + options.hashAns + '&rand=' + options.rand + "&invitedCode=" + options.inviteCode
           })
           console.log("接受邀请")
         }

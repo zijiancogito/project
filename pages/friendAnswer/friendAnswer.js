@@ -8,6 +8,7 @@ var rand = ""
 var inviteCode = ""
 var tempList = wx.getStorageSync("friendList")
 var found = 0
+var name = ""
 Page({
   data: {
     question:"",
@@ -21,6 +22,7 @@ Page({
     hashedAns = options.hashAns
     rand = options.rand
     inviteCode = options.invitedCode
+    name = options.name
     this.setData({
       question:options.question,
       tip:options.tip,
@@ -60,7 +62,9 @@ Page({
           inviteCode:inviteCode
         }
         var tempInfo = {
-          friendId:inviteCode
+          friendId:inviteCode,
+          avatarUrl:"../../image/love.png",
+          name:name
         }
         tempList.push(tempInfo)
         var encData = enc.sendEncData(data, 7)

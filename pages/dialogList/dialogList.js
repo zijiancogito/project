@@ -11,6 +11,7 @@ Page({
         userInfo:{}
     },
     onLoad:function(){
+        console.log("onLoad");
         const self = this
         var fl = wx.getStorageSync('friendList')
         var tempList = []
@@ -52,6 +53,14 @@ Page({
           var data = enc.sendEncData(dataSent,2)
           connSocket.sendMsg(data,self.resolve,self.reject)
         },1000)
+    },
+    onShow:function(){//显示时更新好友列表
+      console.log("onShow")
+      var fl = wx.getStorageSync('friendList')
+      this.setData({
+        list: fl
+      })
+      console.log(fl)
     },
     msgHandler:function(data){
       wx.showToast({
@@ -145,14 +154,12 @@ Page({
         }
       })
     },
-  //           <view class="weui-btn-area" >
-  // <button type="primary" class="weui-btn" bindtap= "jumpShare" > test < /button>
-  // < /view>
+//<button type="primary" class="weui-btn" bindtap= "jumpShare" > test </button>
     // jumpShare:function(){
-    //   var question = "我们初次见面的年月？"
-    //   var tip = "比如201705"
+    //   var question = "我们上次见面的时间"
+    //   var tip = "xxxx-xx-xx"
     //   var rand = "123456"
-    //   var ans = "201301"
+    //   var ans = "2017-05-05"
     //   var hashAns = aesEnc.SHA256(ans+rand)
     //   var InviteCode = "233333"
     //   wx.navigateTo({

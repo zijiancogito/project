@@ -10,7 +10,6 @@
     "pages/dialogList/dialogList",
     "pages/QRCode/QRCode",
     "pages/scanQRCode/scanQRCode",
-    "pages/gestureCode/gestureCode",
     "pages/share/share",
     "pages/answer/answer",
     "pages/friendAnswer/friendAnswer"
