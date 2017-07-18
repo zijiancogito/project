@@ -123,10 +123,15 @@ Page({
         }
         friendId = tempList[found].friendId
         console.log(enctext)
+        //匿名，未完成
+        dataToEnc1 = {
+          sessionid: sid,
+          friendID: friendId,//好友长期秘密
+        }
+        dataEnc1 = enc.sendEncData(dataToEnc1,9)
         var dataSent = {
-            friendID:friendId,//好友长期秘密
-            messageEnc: enctext,
-            sessionid: sid
+          encTarget: dataEnc1,
+          message: enctext
         }
         wx.setStorageSync("friendList",tempList)//存入缓存
         var encData = enc.sendEncData(dataSent,3)
