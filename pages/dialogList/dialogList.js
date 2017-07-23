@@ -55,6 +55,7 @@ Page({
         },1000)
     },
     onShow:function(){//显示时更新好友列表
+      connSocket.setRecvCallback(this.msgHandler)
       console.log("onShow")
       var fl = wx.getStorageSync('friendList')
       this.setData({
@@ -85,6 +86,7 @@ Page({
         var recv = JSON.parse(data)
         this.data.msgRecv = true
         var tempList = wx.getStorageSync("friendList")
+        console.log(recv.state)
         if (recv.state == 6) {
           msgEnc.recvInviteReply(recv)
         }
@@ -121,8 +123,13 @@ Page({
         else if(recv.state == 3){
             //接收到在线消息
             for(var i = 0;i<tempList.length;i++){
+              console.log("log!!!")
+              console.log(tempList[i])
+              console.log(recv)
               if (tempList[i].sessionId == recv.sessionId){
                     var contains = aesEnc.AES.decrypt(recv.log[i].text)
+                    console.log("The msg you recv is: ")
+                    console.log(contains)
                     var tempData = {
                         text: contains,
                         time: recv.time,
@@ -142,18 +149,18 @@ Page({
             console.log("离线消息接收时出现意外state")
         }
     },
-    onShareMessage: function () {
-      var that = this
-      wx.navigateTo({
-        url: '../QuestionSet/QuestionSet',
-        success:function(res){
-           console.log("navigate to question success")
-        },
-        fail: function (res){
-          console.log(res)
-        }
-      })
-    },
+    // onShareMessage: function () {
+    //   var that = this
+    //   wx.navigateTo({
+    //     url: '../QuestionSet/QuestionSet',
+    //     success:function(res){
+    //        console.log("navigate to question success")
+    //     },
+    //     fail: function (res){
+    //       console.log(res)
+    //     }
+    //   })
+    // },
 //<button type="primary" class="weui-btn" bindtap= "jumpShare" > test </button>
     // jumpShare:function(){
     //   var question = "我们上次见面的时间"

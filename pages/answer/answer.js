@@ -16,6 +16,7 @@ Page({
   
   },
   onLoad: function (options) {
+    console.log("answer.js on load")
     conn.connect(this.resolve,this.reject)
     conn.setRecvCallback(this.recvConfirm)
     question = options.question
@@ -24,7 +25,7 @@ Page({
     wx.getUserInfo({
       success: function (res) {
         var userInfo = res.userInfo
-        name = userInfo.nickName
+        myname = userInfo.nickName
       }
     })
     var trd = wx.getStorageSync("trd_session_key")
@@ -40,18 +41,18 @@ Page({
       conn.sendMsg(data, self.resolve,self.reject)
     },2000)
   },
-  onShareAppMessage: function () {
+  onShareAppMessage: function (){
     var rand = enc.random()
     const that = this
     hashAns = aesEnc.SHA256(answer + rand).toString()
-    console.log(name)
     return {
       title: '邀请好友进行秘密通信',
-      path: '/pages/login/login?question=' + question + '&tip=' + tip + "&hashAns=" + hashAns + '&rand=' + rand + "&InvitedCode=" + InviteCode+"&name="+name,
+      path: '/pages/login/login?question=' + question + '&tip=' + tip + "&hashAns=" + hashAns + '&rand=' + rand + "&InvitedCode=" + InviteCode+"&name="+myname,
       success: function (res) {
         tempInfo.secret = answer
         tempInfo.avatarUrl = "../../image/love.png"
         tempInfo.name = "Waiting for answer..."
+        //tempInfo.sessionId = 
         tempList.push(tempInfo)
         wx.setStorageSync("friendList", tempList)
         wx.navigateBack({
@@ -77,6 +78,6 @@ Page({
   },
   bindAnswerInput:function(e){
     tip = e.detail.value.tip
-    console.log(tip)
+    console.log("tip is: "+tip)
   },
 })

@@ -12,6 +12,7 @@ Page({
   
   },
   onLoad: function (options) {
+    console.log("questionSet.js onload! opt: ")
     const self = this
     var rand = enc.random()
     wx.getUserInfo({
@@ -26,6 +27,7 @@ Page({
   setFinished:function(e){
     question = e.detail.value.question
     answer = e.detail.value.answer
+    console.log(question + " , "+answer)
     if(question == "" || answer == ""){
       wx.showToast({
         title: '问题或答案不能为空',

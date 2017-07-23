@@ -4,7 +4,7 @@
             <view class="weui-cells weui-cells_after-title">
             <view class="weui-cell">
                 <view class="weui-cell__bd">
-                    <textarea name="answer" class="weui-textarea" placeholder="请输入问题" style="height: 3.3em" />                
+                    <textarea name="question" class="weui-textarea" placeholder="请输入问题" style="height: 3.3em" />                
                 </view>
             </view>
             </view>

@@ -29,10 +29,13 @@ Page({
   onLoad:function(options){
     const self = this;
     conn.connect(self.resolve,self.reject);
+    conn.setRecvCallback(this.msgHandler)
     app.getUserInfo(function (userInfo){
       myAvatar  = userInfo.avatarUrl
     })
     sid = options.sessionId
+    console.log("sid!!!!!!!!!!!!!!!")
+    console.log(sid)
     var msg = []
     tempList = wx.getStorageSync('friendList')
     for(var i = 0; i < tempList.length;i++){
@@ -47,7 +50,9 @@ Page({
     self.setData({
       messages:[...msg]//显示消息
     })
-
+  },
+  onShow:function(){
+    conn.setRecvCallback(this.msgHandler)//切换到当前目录的消息处理机
   },
   onUnload:function(){
     // 页面关闭
@@ -84,59 +89,68 @@ Page({
         console.log(e.detail.value)
     },
 
-    sendMessage:function(){
-        //点击send按钮触发的函数
-        this.setData({
-          messages: [...this.data.messages, {
-                  text: this.data.inputContent.message,
-                  from: 'sent',
-                  avatarUrl:myAvatar
-            }]
-        })
-        this.setData({
-            inputValue : ''
-        })
-        const _self = this
-        var trd = wx.getStorageSync("trd_session_key")
-        var plaintext = _self.data.messages[_self.data.messages.length - 1].text
-        var friendInfo = {}
-        var found = 0
-        var enctext = ""
-        for(var i = 0;i < tempList.length;i++){
-          if(tempList[i].sessionId == sid){
-            friendInfo = tempList[i]
-            found = i
-            break;
-          }
+  sendMessage:function(){
+      //点击send按钮触发的函数
+      console.log("log 0")
+      this.setData({
+        messages: [...this.data.messages, {
+                text: this.data.inputContent.message,
+                from: 'sent',
+                avatarUrl:myAvatar
+          }]
+      })
+      console.log("log 1");
+      this.setData({
+          inputValue : ''
+      })
+      console.log("log 2")
+      const _self = this
+      var trd = wx.getStorageSync("trd_session_key")
+      console.log("log 3 : trd "+trd)
+      var plaintext = _self.data.messages[_self.data.messages.length - 1].text
+      console.log("log 4 : "+ plaintext)
+      var friendInfo = {}
+      var found = 0
+      var enctext = ""
+      for(var i = 0;i < tempList.length;i++){
+        if(tempList[i].sessionId == sid){
+          friendInfo = tempList[i]
+          found = i
+          break;
         }
-        var seqObj = msgEnc.seqEncrypt(plaintext, friendInfo)
-        if(seqObj.update == 0){
-          tempList[found].seqSentIndex = seqObj.index;
-          enctext=seqObj.enctext
-        }
-        else{
-          tempList[found].seqSent = seqObj.seqRev;
-          tempList[found].seqSentIndex = seqObj.index;
-          tempList[found].secret = seqObj.secret;
-          tempList[found].seqIndex = seqIndex
-          enctext = seqObj.enctext
-        }
-        friendId = tempList[found].friendId
-        console.log(enctext)
-        //匿名，未完成
-        dataToEnc1 = {
-          sessionid: sid,
-          friendID: friendId,//好友长期秘密
-        }
-        dataEnc1 = enc.sendEncData(dataToEnc1,9)
-        var dataSent = {
-          encTarget: dataEnc1,
-          message: enctext
-        }
-        wx.setStorageSync("friendList",tempList)//存入缓存
-        var encData = enc.sendEncData(dataSent,3)
-        conn.sendMsg(encData,this.resolve,this.reject)
-    },
+      }
+      console.log("log 5 : ")
+      console.log(friendInfo)//can't find
+      var seqObj = msgEnc.seqEncrypt(plaintext, friendInfo)
+      console.log(seqObj)
+      if(seqObj.update == 0){
+        tempList[found].seqSentIndex = seqObj.index;
+        enctext=seqObj.enctext
+      }
+      else{
+        tempList[found].seqSent = seqObj.seqRev;
+        tempList[found].seqSentIndex = seqObj.index;
+        tempList[found].secret = seqObj.secret;
+        tempList[found].seqIndex = seqIndex
+        enctext = seqObj.enctext
+      }
+      friendId = tempList[found].friendId
+      console.log(enctext)
+      //匿名，未完成
+      var dataToEnc1 = {
+        sessionid: sid,
+        friendID: friendId//好友长期秘密
+      }
+      var dataEnc1 = JSON.stringify(enc.sendEncData(dataToEnc1,3))
+      console.log(dataEnc1)
+      var dataSent = {
+        encTarget: dataEnc1,
+        message: enctext
+      }
+      wx.setStorageSync("friendList",tempList)//存入缓存
+      var encData = enc.sendEncData(dataSent,3)
+      conn.sendMsg(encData,this.resolve,this.reject)
+  },
   msgHandler:function(data){
     //离线消息暂时用数组传输，视服务器方便而定
     /*
@@ -152,6 +166,7 @@ Page({
           }
     */
     var recv = JSON.parse(data)
+    console.log(recv)
     this.data.msgRecv = true
     var tempList = wx.getStorageSync("friendList")
     if (recv.state == 6) {

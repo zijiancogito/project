@@ -9,6 +9,8 @@ var inviteCode = ""
 var tempList = wx.getStorageSync("friendList")
 var found = 0
 var name = ""
+var myAvatar = ""
+var app = getApp()
 Page({
   data: {
     question:"",
@@ -19,6 +21,9 @@ Page({
   },
   onLoad: function (options) {
     connSocket.connect(this.resolve,this.reject)
+    app.getUserInfo(function (userInfo) {
+      myAvatar = userInfo.avatarUrl
+    })
     hashedAns = options.hashAns
     rand = options.rand
     inviteCode = options.invitedCode
@@ -50,7 +55,7 @@ Page({
         inputValue: ''
       })
       var myHashAns = aesEnc.SHA256(this.data.inputContent.answer + rand)
-      if(myHashAns == hashedAns){
+      if(myHashAns == hashedAns){//验证答案是否正确
         wx.showToast({
           title: '好友认证成功，可以开始聊天啦！',
         })
@@ -85,15 +90,18 @@ Page({
   },
   waitReply:function(res){
     var recv = JSON.parse(res)
+    console.log("waitReply invoked!")
     if(recv.state == 4){
       for (var i = 0; i < tempList.length;i++){
-        if (tempList[i].friendId == recv.inviteCode){
+        if (tempList[i].friendId == recv.inviteCode){//验证成功，用inviteCode到服务器上换取对方的真实frindId并更新  
           found = i
           tempList[i].friendId = recv.friendId
           tempList[i].avatarUrl = ""
           var myId = wx.getStorageSync("uniqueId")
           tempList[i].secret = this.data.inputContent.answer
-          tempList[i].sessionId = aesEnc.MD5(myId + tempList[i].secret + recv.friendId)
+          tempList[i].sessionId = aesEnc.MD5(myId + tempList[i].secret + recv.friendId).toString()
+          console.log("sssssessionId?????????????")
+          console.log(tempList[i].sessionId)
           tempList[i].seqSent = msgProc.rand(aesEnc.MD5(myId + tempList[i].secret),20,0,20)
           tempList[i].seqRecv = msgProc.rand(aesEnc.MD5(recv.friendId + tempList[i].secret),20,0,20)
           tempList[i].seqIndex = msgProc.rand(aesEnc.MD5(tempList[i].secret), 20, 0, 20)
@@ -103,7 +111,9 @@ Page({
           var seqObj = msgProc.seqEncrypt("天王盖地虎！",tempList[i])
           var firstAsk = {
             text: "天王盖地虎！",
-            time: new Date().getTime()
+            time: new Date().getTime(),
+            from:"sent",
+            avatarUrl: myAvatar
           }
           tempList[i].message = []
           tempList[i].message.push(firstAsk)
@@ -119,13 +129,19 @@ Page({
               tempList[i].secret = seqObj.secret
           }
           wx.setStorageSync("friendList", tempList)
-          var dataSent = {
-            sessionid:tempList[i].sessionId,
-            messageEnc: enctext,
-            friendID:tempList[i].friendId
+          //匿名性，未完成
+          var dataToEnc1 = {
+            sessionid: tempList[i].sessionId,
+            friendID: tempList[i].friendId//好友长期秘密
           }
-          var dataEnc = enc.sendEncData(dataSent,3)
-          connSocket.sendMsg(dataEnc,this.resolve,this.reject)
+          var dataEnc1 = JSON.stringify(enc.sendEncData(dataToEnc1, 3))
+          console.log(dataEnc1)
+          var dataSent = {
+            encTarget: dataEnc1,
+            message: enctext
+          }
+          var encData = enc.sendEncData(dataSent, 3)
+          connSocket.sendMsg(encData,this.resolve,this.reject)
           wx.navigateTo({
             url: '../dialog/dialog?sessionId=' + tempList[found].sessionId,
             success:function(){
@@ -144,9 +160,11 @@ Page({
     }
   },
   resolve:function(res){
+    console.log("resolve invoked!")
     console.log(res)
   },
   reject:function(res){
+    console.log("reject invoked!")
     console.log(res)
   }
 })

@@ -5,7 +5,7 @@
             <view class="weui-cells weui-cells_after-title">
             <view class="weui-cell">
                 <view class="weui-cell__bd">
-                    <textarea name="tip" class="weui-textarea" placeholder="请输入提示" style="height: 3.3em" />                
+                    <textarea name="tip" auto-height="true" class="weui-textarea" focus= "true" placeholder="请输入提示"/>                  
                 </view>
             </view>
             </view>

@@ -88,7 +88,7 @@ login：----login.js
 消息转发:----dialog.js
 {
 	state:3,
-  sessionid: <offline text>(string),
+  sessionid: <session key>(string),
   text:<data from friend>(string),
   time:<sent time>
 }
