@@ -5,11 +5,25 @@ var province = ""
 var city = ""
 var country = ""
 var gender = ""
+var inviteCode = ""
+var question = ""
+var tip = ""
+var hashAns = ""
+var rand = ""
 var connSocket = require("../../function/connect.js")
 var enc = require("../../function/encAndRand.js")
 Page({
   onLoad:function(options){
     const self = this
+    name = options.name
+    inviteCode = options.inviteCode
+    question = options.question
+    tip = options.tip
+    hashAns = options.hashAns
+    rand = options.rand
+    console.log("opt log !!!!!!!!!!!!!!:")
+    console.log(options)
+    setTimeout(function () { }, 10000)
     connSocket.connect(this.resolve,this.reject)
     wx.showModal({
       title: "来自小程序Secret Message的邀请",
@@ -20,14 +34,14 @@ Page({
       success:function(res){
         if(res.confirm){
           wx.navigateTo({
-            url: '../friendAnswer/friendAnswer?name='+name+'&question=' + options.question + "&tip=" + options.tip + "&hashAns=" + options.hashAns + '&rand=' + options.rand + "&invitedCode=" + options.inviteCode
+            url: '../friendAnswer/friendAnswer?name='+name+'&question=' + question + "&tip=" + tip + "&hashAns=" + hashAns + '&rand=' + rand + "&inviteCode=" + inviteCode
           })
           console.log("接受邀请")
         }
         else if(res.cancel){
-          console.log(options.InvitedCode)
+          setTimeout(function(){},10000)
           var data = {
-            inviteCode: options.InvitedCode
+            inviteCode: inviteCode
           }
           var encData = enc.sendEncData(data, 6)
           connSocket.sendMsg(encData, self.resolve, self.reject)

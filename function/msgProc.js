@@ -4,14 +4,17 @@ var seqStart = 10000000
 var seqEnd = 99999999
 var seqLen = 20
 function seqEncrypt(msg,friendInfo){
-  var index = friendInfo.seqRecvIndex
+  var index = friendInfo.seqSentIndex
   if (index >= seqLen) {
     index = 0
     var res = seqUpdate(friendInfo, "send")
     var seqSent = res.seqSent
     var indexSeq = res.indexSeq
     var secret = res.secret
-    var pwd = seqSent[indexSeq[index++]]
+    var pwd = seqSent[indexSeq[index++]].toString()
+    console.log("Enc log :")
+    console.log(msg+pwd)
+    console.log(friendInfo)
     var enctext = aesEnc.AES.encrypt(msg, pwd)
     return {
       update: 1,
@@ -25,26 +28,34 @@ function seqEncrypt(msg,friendInfo){
   else {
     var indexSeq = friendInfo.seqIndex
     var seqSent = friendInfo.seqSent
+    console.log(friendInfo)
     var pwd = seqSent[indexSeq[index++]].toString()//toString影响解密？
-    var enctext = aesEnc.AES.encrypt(msg, pwd)
+    var enctext = aesEnc.AES.encrypt(msg, pwd).toString()
+    console.log("Enc log :")
+    console.log(msg+","+pwd)
+    console.log(enctext)
     return {
       update: 0,
-      enctext: enctext.ciphertext.toString(),
+      enctext: enctext,
       index: index
     }
   }
 }
 
 function seqDecrypt(msg,friendInfo){
+  console.log("seqDec test1:" + msg)
   var index = friendInfo.seqRecvIndex
+  console.log("seqDec test2:"+index)
   if(index >= seqLen){
     index = 0
     var res = seqUpdate(friendInfo,"recv")
     var seqRecv = res.seqRecv
     var indexSeq = res.indexSeq
     var secret = res.secret
-    var pwd = seqSent[indexSeq[index++]].toString()
-    var plaintext = aesEnc.AES.decrypt(msg,pwd)
+    var pwd = seqRecv[indexSeq[index++]].toString()
+    console.log("seqDec test3:" + pwd)
+    var plaintext = aesEnc.AES.decrypt(msg,pwd).toString(aesEnc.enc.Utf8)
+    console.log("seqDec test4: update")
     return{
       update:1,
       seqRecv: seqRecv,
@@ -55,10 +66,13 @@ function seqDecrypt(msg,friendInfo){
     }
   }
   else{
+    console.log("seqDec test5: no update")
     var indexSeq = friendInfo.seqIndex
-    var seqSent = friendInfo.seqSent
-    var pwd = seqSent[indexSeq[index++]]
-    var plaintext = aesEnc.AES.decrypt(msg, pwd)
+    var seqRecv = friendInfo.seqRecv
+    var pwd = seqRecv[indexSeq[index++]].toString()
+    console.log("seqDec test6: " + msg +"," +pwd)
+    console.log(friendInfo)
+    var plaintext = aesEnc.AES.decrypt(msg, pwd).toString(aesEnc.enc.Utf8)
     return {
       update:0,
       plaintext: plaintext,
@@ -96,21 +110,30 @@ function seqUpdate(friendInfo, deType){
   }
 }
 function recvInviteReply(recv){
+  console.log("recvInviteRepy invoke!!!!!!!!!!!")
+  console.log(recv)
   var tempList = wx.getStorageSync("friendList")
   if (recv.result == 1) {
     for (var i = 0; i < tempList.length; i++) {
+      console.log("查找好友"+i)
+      console.log(tempList[i])
       if (tempList[i].inviteCode == recv.inviteCode) {
+        console.log("找到好友，信息如下：")
+        console.log(tempList[i])
         tempList[i].friendId = recv.friendId
         var myId = wx.getStorageSync("uniqueId")
-        tempList[i].sessionId = aesEnc.MD5(myId + tempList[i].secret + recv.friendId)
-        var seq1 = testRandom(aesEnc.MD5(myId + tempList[i].secret), seqLen, seqStart, seqEnd)
-        var seq2 = testRandom(aesEnc.MD5(recv.friendId + tempList[i].secret), seqLen, seqStart, seqEnd)
-        var seq3 = testRandom(aesEnc.MD5(tempList[i].secret), seqLen, 0, seqLen)
+        tempList[i].sessionId = aesEnc.MD5(recv.friendId + tempList[i].secret + myId ).toString()
+        var seq1 = testRandom(aesEnc.MD5(myId + tempList[i].secret).toString(), seqLen, seqStart, seqEnd)
+        var seq2 = testRandom(aesEnc.MD5(recv.friendId + tempList[i].secret).toString(), seqLen, seqStart, seqEnd)
+        var seq3 = testRandom(aesEnc.MD5(tempList[i].secret).toString(), seqLen, 0, seqLen)
         tempList[i].seqSent = seq1;
         tempList[i].seqRecv = seq2;
         tempList[i].seqIndex = seq3;
         tempList[i].seqRecvIndex = 0;
         tempList[i].seqSentIndex = 0;
+        tempList[i].message = [];
+        console.log("更新好友信息为：")
+        console.log(tempList[i])
         wx.setStorageSync("friendList", tempList)
         wx.navigateTo({
           url: '/pages/dialog/dialog?sessionId='+tempList[i].sessionId,
@@ -128,8 +151,18 @@ function recvInviteReply(recv){
     wx.showToast({
       title: '好友拒绝了您的通信请求',
     })
+    for (var i = 0;i < tempList.length;i++){
+      if(tempList[i].inviteCode == recv.inviteCode){
+        tempList.splice(i,1)
+      }
+    }
   }
   else {
+    for (var i = 0; i < tempList.length; i++) {
+      if (tempList[i].inviteCode == recv.inviteCode) {
+        tempList.splice(i, 1)
+      }
+    }
     wx.showToast({
       title: '回答问题错误',
     })
@@ -137,7 +170,7 @@ function recvInviteReply(recv){
 }
 function testRandom(seed,num,start,end){
   var res = []
-  Math.seedrandom("hello")
+  Math.seedrandom(seed)
   for(var i = 0; i< num;i++){
     res.push(Math.floor(Math.random() * (end - start)) + start)
   }

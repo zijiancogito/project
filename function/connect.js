@@ -66,13 +66,45 @@ module.exports = (function(){
             reject("网络问题，请检查网络后刷新重试")
         }
     }
-
+    function keepOnlineState(){
+      self = this
+      wx.checkSession({//检查登录状态
+        success: function () {
+          var code = wx.getStorageSync("code")
+          var dataSent = {
+            state: 1,
+            code: res.code
+          }
+          setTimeout(function () {
+            sendMsg(dataSent, self.resolve, self.reject)
+          }, 1000)
+        },
+        fail: function () {
+          wx.login({
+            success: function (res) {
+              var dataSent = {
+                state: 1,
+                code: res.code
+              }
+              sendMsg(dataSent,self.resolve, self.reject)
+            },
+          })
+        }
+      })
+    }
+    function resolve(res){
+      console.log(res)
+    }
+    function reject(res){
+      console.log(res)
+    }
     init();//执行初始化操作
     return {
         connect:connect,
         sendMsg:sendMsg,
         setRecvCallback:setRecvCallback,
         isWebsocketOpen:isWebsocketOpen,
-        init:init
+        init:init,
+        keepOnlineState: keepOnlineState
     };
 })()

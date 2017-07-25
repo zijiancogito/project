@@ -13,6 +13,7 @@ var tip = ""
 var hashAns = ""
 var rand = ""
 var inviteCode = ""
+var name = ""
 Page({
   data: {
   },
@@ -20,7 +21,16 @@ Page({
     this.data.loginInfo[e.currentTarget.id] = e.detail.value
   },
   onLoad: function (options){
+    console.log("login opt log: ")
     console.log(options)
+    setTimeout(function () {
+    }, 5000)
+    tip = options.tip
+    rand = options.rand
+    hashAns = options.hashAns
+    name = options.name
+    question = options.question
+    inviteCode = options.inviteCode
     //连接服务器
     connWebSocket.connect(this.resolve,this.reject);
     const that = this
@@ -28,22 +38,13 @@ Page({
       success: function (res) {
         if (options.question != undefined){
           isShared = 1
-          inviteCode = options.InvitedCode
-          console.log("shared friend ! inviteCode = "+inviteCode)
-          question = options.question
-          tip = options.tip
-          rand = options.rand
-          hashAns = options.hashAns
-          var name = options.name
-          var tempList = wx.getStorageSync("friendList")
-          var newFriend = {
-            friendId: options.InvitedCode,
-            name: name
-          }
-          tempList.push(newFriend)
-          wx.setStorageSync("friendList",tempList)
+          console.log("shared user ! inviteCode = "+inviteCode)
+        }
+        else {
+          isShared = 0
         }
         console.log(wx.getStorageSync("friendList"))
+        wx.setStorageSync("code", code)
         var dataSent = {
           state: 1,
           code: res.code
@@ -52,7 +53,7 @@ Page({
         setTimeout(function(){
           connWebSocket.sendMsg(dataSent, that.resolve, that.reject)
         },1000)
-        
+
         if (isShared != 1) {//用户不是被邀请的
           console.log("非邀请用户")
           wx.checkSession({
@@ -113,10 +114,10 @@ Page({
     wx.setStorageSync("uniqueId",recv.id)
     wx.setStorageSync('seq', 0)
     trd_recv_state = 1
-    console.log(inviteCode)
+    console.log(recv)
     if(isShared==1){
       wx.navigateTo({
-        url: '../share/share?question=' + question + '&tip=' + tip + "&hashAns=" + hashAns + '&rand=' + rand + "&inviteCode=" + inviteCode,
+        url: '../share/share?name=' + name + '&question=' + question + '&tip=' + tip + "&hashAns=" + hashAns + '&rand=' + rand + "&inviteCode=" + inviteCode,
       })
      }
   },
@@ -146,7 +147,7 @@ Page({
             if(trd_recv_state){
               if (isShared == 1) {
                 wx.navigateTo({
-                  url: '../share/share?question=' + question + '&tip=' + tip + "&hashAns=" + hashAns + '&rand=' + rand + "&inviteCode=" + inviteCode,
+                  url: '../share/share?name='+name+'&question=' + question + '&tip=' + tip + "&hashAns=" + hashAns + '&rand=' + rand + "&inviteCode=" + inviteCode,
                 })
               }
               else{

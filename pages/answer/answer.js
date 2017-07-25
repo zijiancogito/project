@@ -18,7 +18,6 @@ Page({
   onLoad: function (options) {
     console.log("answer.js on load")
     conn.connect(this.resolve,this.reject)
-    conn.setRecvCallback(this.recvConfirm)
     question = options.question
     InviteCode = options.inviteCode
     answer = options.answer
@@ -41,15 +40,21 @@ Page({
       conn.sendMsg(data, self.resolve,self.reject)
     },2000)
   },
+  onShow:function(){
+    conn.setRecvCallback(this.recvConfirm)
+  },
   onShareAppMessage: function (){
     var rand = enc.random()
     const that = this
     hashAns = aesEnc.SHA256(answer + rand).toString()
+    console.log("invite code log :")
+    console.log(InviteCode)
     return {
       title: '邀请好友进行秘密通信',
-      path: '/pages/login/login?question=' + question + '&tip=' + tip + "&hashAns=" + hashAns + '&rand=' + rand + "&InvitedCode=" + InviteCode+"&name="+myname,
+      path: '/pages/login/login?question=' + question + '&tip=' + tip + "&hashAns=" + hashAns + '&rand=' + rand + "&inviteCode=" + InviteCode+"&name="+myname,
       success: function (res) {
-        tempInfo.secret = answer
+        tempInfo.inviteCode = InviteCode
+        tempInfo.secret = aesEnc.MD5(answer).toString()
         tempInfo.avatarUrl = "../../image/love.png"
         tempInfo.name = "Waiting for answer..."
         //tempInfo.sessionId = 

@@ -10,6 +10,14 @@ var tempList = wx.getStorageSync("friendList")
 var found = 0
 var name = ""
 var myAvatar = ""
+var myname = ""
+var mycountry = ""
+var mygender = ""
+var mycity = ""
+var myprovince = ""
+var seqStart = 10000000
+var seqEnd = 99999999
+var seqLen = 20
 var app = getApp()
 Page({
   data: {
@@ -22,11 +30,18 @@ Page({
   onLoad: function (options) {
     connSocket.connect(this.resolve,this.reject)
     app.getUserInfo(function (userInfo) {
+      myname = userInfo.nickName
       myAvatar = userInfo.avatarUrl
+      mycountry = userInfo.country
+      mygender = userInfo.gender
+      mycity = userInfo.city
+      myprovince = userInfo.province
     })
+    console.log("friendans opt log!!!!!")
+    console.log(options)
     hashedAns = options.hashAns
     rand = options.rand
-    inviteCode = options.invitedCode
+    inviteCode = options.inviteCode
     name = options.name
     this.setData({
       question:options.question,
@@ -66,6 +81,8 @@ Page({
           result: 1,
           inviteCode:inviteCode
         }
+        console.log("success info !!!")
+        console.log(data)
         var tempInfo = {
           friendId:inviteCode,
           avatarUrl:"../../image/love.png",
@@ -91,6 +108,8 @@ Page({
   waitReply:function(res){
     var recv = JSON.parse(res)
     console.log("waitReply invoked!")
+    console.log("get server reply :!!!!!!!!!!!")
+    console.log(recv)
     if(recv.state == 4){
       for (var i = 0; i < tempList.length;i++){
         if (tempList[i].friendId == recv.inviteCode){//验证成功，用inviteCode到服务器上换取对方的真实frindId并更新  
@@ -98,17 +117,34 @@ Page({
           tempList[i].friendId = recv.friendId
           tempList[i].avatarUrl = ""
           var myId = wx.getStorageSync("uniqueId")
-          tempList[i].secret = this.data.inputContent.answer
+          console.log("uniqueId :"+myId)
+          tempList[i].secret = aesEnc.MD5(this.data.inputContent.answer).toString()
           tempList[i].sessionId = aesEnc.MD5(myId + tempList[i].secret + recv.friendId).toString()
-          console.log("sssssessionId?????????????")
-          console.log(tempList[i].sessionId)
-          tempList[i].seqSent = msgProc.rand(aesEnc.MD5(myId + tempList[i].secret),20,0,20)
-          tempList[i].seqRecv = msgProc.rand(aesEnc.MD5(recv.friendId + tempList[i].secret),20,0,20)
-          tempList[i].seqIndex = msgProc.rand(aesEnc.MD5(tempList[i].secret), 20, 0, 20)
+          console.log("inviterId: ")
+          console.log(recv.friendId)
+          console.log("reciver id:")
+          console.log(myId)
+          console.log("secret:")
+          console.log(this.data.inputContent.answer)
+          console.log(tempList[i].secret)
+          tempList[i].seqSent = msgProc.rand(aesEnc.MD5(myId + tempList[i].secret).toString(), seqLen, seqStart, seqEnd)
+          tempList[i].seqRecv = msgProc.rand(aesEnc.MD5(recv.friendId + tempList[i].secret).toString(), seqLen,seqStart, seqEnd)
+          tempList[i].seqIndex = msgProc.rand(aesEnc.MD5(tempList[i].secret).toString(), seqLen, 0, seqLen)
           tempList[i].seqRecvIndex = 0;
           tempList[i].seqSentIndex = 0;
+          tempList[i].message =[];
           var enctext = ""
-          var seqObj = msgProc.seqEncrypt("天王盖地虎！",tempList[i])
+          var firstContact = {
+            name:myname,
+            avatarUrl:myAvatar,
+            country:mycountry,
+            gender:mygender,
+            city:mycity,
+            province:myprovince,
+            text: "天王盖地虎！"
+          }
+          console.log(JSON.stringify(firstContact))
+          var seqObj = msgProc.seqEncrypt(JSON.stringify(firstContact),tempList[i])
           var firstAsk = {
             text: "天王盖地虎！",
             time: new Date().getTime(),
@@ -141,7 +177,11 @@ Page({
             message: enctext
           }
           var encData = enc.sendEncData(dataSent, 3)
+          setTimeout(function(){
+
+          },1000)
           connSocket.sendMsg(encData,this.resolve,this.reject)
+          console.log("Navigate to " + '../dialog/dialog?sessionId=' + tempList[found].sessionId + "sucess!")
           wx.navigateTo({
             url: '../dialog/dialog?sessionId=' + tempList[found].sessionId,
             success:function(){

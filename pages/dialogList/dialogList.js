@@ -27,14 +27,14 @@ Page({
         })
         
         wx.showToast({
-            title:"正在从服务器加载离线消息",
+            title:"收取消息中...",
             icon:"loading",
             duration:5000
         });
         setTimeout(function(){
             if(!self.data.msgRecv){
                 wx.showToast({
-                    title:"获取离线消息失败，请刷新重试",
+                    title:"收取消息失败，请刷新重试",
                     icon:"success",
                     duration:3000
                 })
@@ -54,10 +54,13 @@ Page({
           connSocket.sendMsg(data,self.resolve,self.reject)
         },1000)
     },
-    onShow:function(){//显示时更新好友列表
+    onShow:function(){
       connSocket.setRecvCallback(this.msgHandler)
-      console.log("onShow")
+      console.log("dialoglist onShow")
+      connSocket.keepOnlineState()
+      //显示时更新好友列表
       var fl = wx.getStorageSync('friendList')
+      console.log(fl)
       this.setData({
         list: fl
       })
@@ -65,29 +68,22 @@ Page({
     },
     msgHandler:function(data){
       wx.showToast({
-        title: "接收离线消息完毕！",
+        title: "接收消息完毕！",
         icon: "success",
         duration: 3000
       })
-        //离线消息暂时用数组传输，视服务器方便而定
-        /*
-        数组元素格式{
-                text: "",
-                from: friendID,
-                time:send time
-            }
-        若要传输图片，则格式如下：
-            {
-                text: 图片的url,
-                from: 'recv',
-                image:true
-            }
-        */
+        console.log("recv msg show !!!!!")
         var recv = JSON.parse(data)
         this.data.msgRecv = true
         var tempList = wx.getStorageSync("friendList")
         console.log(recv.state)
-        if (recv.state == 6) {
+        console.log(recv)
+        if (recv.reply != undefined || recv.reply != null){
+          wx.setStorageSync('trd_session_key', recv.reply)
+          wx.setStorageSync('server_public_key', recv.pubkey)
+          wx.setStorageSync("uniqueId", recv.id)
+        }
+        else if (recv.state == 6) {
           msgEnc.recvInviteReply(recv)
         }
         else if(recv.state === 1){
@@ -123,7 +119,7 @@ Page({
         else if(recv.state == 3){
             //接收到在线消息
             for(var i = 0;i<tempList.length;i++){
-              console.log("log!!!")
+              console.log("online message log!!!")
               console.log(tempList[i])
               console.log(recv)
               if (tempList[i].sessionId == recv.sessionId){
@@ -149,30 +145,15 @@ Page({
             console.log("离线消息接收时出现意外state")
         }
     },
-    // onShareMessage: function () {
-    //   var that = this
-    //   wx.navigateTo({
-    //     url: '../QuestionSet/QuestionSet',
-    //     success:function(res){
-    //        console.log("navigate to question success")
-    //     },
-    //     fail: function (res){
-    //       console.log(res)
-    //     }
-    //   })
-    // },
-//<button type="primary" class="weui-btn" bindtap= "jumpShare" > test </button>
-    // jumpShare:function(){
-    //   var question = "我们上次见面的时间"
-    //   var tip = "xxxx-xx-xx"
-    //   var rand = "123456"
-    //   var ans = "2017-05-05"
-    //   var hashAns = aesEnc.SHA256(ans+rand)
-    //   var InviteCode = "233333"
-    //   wx.navigateTo({
-    //     url: '/pages/login/login?question=' + question + '&tip=' + tip + "&hashAns=" + hashAns + '&rand=' + rand + "&InvitedCode=" + InviteCode,
-    //   })
-    // },
+    sessionKeyRecv: function (res) {
+      var recv = JSON.parse(res)
+      console.log(recv.reply)
+      wx.setStorageSync('trd_session_key', recv.reply)
+      wx.setStorageSync('server_public_key', recv.pubkey)
+      wx.setStorageSync("uniqueId", recv.id)
+      console.log(recv)
+
+    },
     gopage:function(url){
         wx.navigateTo({
             url: url,

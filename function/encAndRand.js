@@ -55,7 +55,7 @@ function aesDecrypt(secret){
   //test
   var s = {'log':[], 'seq':0}
   var st = JSON.stringify(s)
-   var aesKey = wx.getStorageSync("aeskey2server")
+  var aesKey = wx.getStorageSync("aeskey2server")
   var ciphertext1 = aesEnc.AES.encrypt(st, aesKey);
   var bytes = aesEnc.AES.decrypt(ciphertext1.toString(), aesKey);
    var plaintext1 = bytes.toString(aesEnc.enc.Utf8);
